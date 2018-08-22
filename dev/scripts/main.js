@@ -1,3 +1,8 @@
+// DON'T FORGET !!!!!!!!!!!
+// git pull upstream master
+///////////////////////////
+
+
 /////////////////////// START OF PSEUDOCODE ///////////////////////
 
 // Prompt for user's postal code, store in variable
@@ -51,33 +56,79 @@ zmt.url = 'https://developers.zomato.com/api/v2.1/'
 
 
 // ajax request to Zomato geocode endpoint
-zmt.geocodeCall = (lat, lon) => $.ajax({
-    url: `${zmt.url}geocode`,
-    method: 'GET',
-    dataType: 'json',
-    data: {
-        apikey: zmt.key,
-        lat: lat,
-        lon: lon,
-    }
-}).then((res) => {
-    // returns array of popular restaurants near lat and lon
-    console.log(res.nearby_restaurants);
-    return res.nearby_restaurants;
-});
+// zmt.geocodeCall = (lat, lon) => $.ajax({
+//     url: `${zmt.url}geocode`,
+//     method: 'GET',
+//     dataType: 'json',
+//     data: {
+//         apikey: zmt.key,
+//         lat: lat,
+//         lon: lon,
+//     }
+// }).then((res) => {
+//     // filters array of popular restaurants near lat and lon
+//     const shortlist = res.nearby_restaurants.filter((resto) => {
+//         // returns only restaurants serving 'Asian' cuisine
+//         return resto.restaurant.cuisines.includes('Asian');
+//     });
+//     console.log(shortlist);
+// });
 
 
 //////////////////
 // MOVIEDB JUNK //
 //////////////////
 
+mdb.key = '2b03b1ad14b5664a21161db2acde3ab5'
+mdb.url = 'https://api.themoviedb.org/3/'
 
+// movie IDs: action 28, comedy 35, crime 80, horror 27, drama 18, family 10751
+// tv IDs: action 10759, comedy 35, animation 16, crime 80, drama 18, reality 10764
 
+mdb.tvCall = (genre, page = 1) => $.ajax({
+    url: `${mdb.url}discover/tv`,
+    method: 'GET',
+    dataType: 'json',
+    data: {
+        api_key: mdb.key,
+        sort_by: 'popularity.desc',
+        with_original_language: 'en',
+        page: page,
+        with_genres: genre
+    }
+}).then((res) => {
+    console.log(res);
+});
 
+mdb.movieCall = (genre, page = 1) => $.ajax({
+    url: `${mdb.url}discover/movie`,
+    method: 'GET',
+    dataType: 'json',
+    data: {
+        api_key: mdb.key,
+        sort_by: 'popularity.desc',
+        with_original_language: 'en',
+        page: page,
+        with_genres: genre
+    }
+}).then((res) => {
+    console.log(res);
+});
+
+mdb.tvDetails = (id) => $.ajax({
+    url: `${mdb.url}/tv/{id}`,
+    method: 'GET',
+    dataType: 'json',
+    data: {
+        key: mdb.key,
+        
+    }
+})
 //////////////////// DOCUMENT READY ////////////////////
 
 $(function(){
 
-    zmt.geocodeCall(43.6481870, -79.3979690);
-
+    // zmt.geocodeCall(43.6481870, -79.3979690);
+    mdb.tvCall("35, 80");
+    // mdb.movieCall();
 });
