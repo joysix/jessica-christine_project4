@@ -52,27 +52,48 @@ const mdb = app.mdb;
 zmt.key = '2c44fd9fe198e5be83cccbdfab8665f5'
 zmt.url = 'https://developers.zomato.com/api/v2.1/'
 // let lat = 43.6481870     // testing w HY coordinates
-// let lon = -79.3979690    
+// let lon = -79.3979690  
+let cuisine = ('Asian')
+    // $('form').on('submit', function (event) {
+    //   event.preventDefault();
+      // const cuisine = $('input[name=cuisine]:checked').data('point');
+    //   console.log(cuisine);
+    // });
 
 
 // ajax request to Zomato geocode endpoint
-// zmt.geocodeCall = (lat, lon) => $.ajax({
-//     url: `${zmt.url}geocode`,
-//     method: 'GET',
-//     dataType: 'json',
-//     data: {
-//         apikey: zmt.key,
-//         lat: lat,
-//         lon: lon,
-//     }
-// }).then((res) => {
-//     // filters array of popular restaurants near lat and lon
-//     const shortlist = res.nearby_restaurants.filter((resto) => {
-//         // returns only restaurants serving 'Asian' cuisine
-//         return resto.restaurant.cuisines.includes('Asian');
-//     });
-//     console.log(shortlist);
-// });
+zmt.geocodeCall = (lat, lon) => $.ajax({
+    url: `${zmt.url}geocode`,
+    method: 'GET',
+    dataType: 'json',
+    data: {
+        apikey: zmt.key,
+        lat: lat,
+        lon: lon,
+    }
+}).then((res) => {
+    // returns array of popular restaurants near lat and lon
+    console.log(res.nearby_restaurants);
+    //filter this array of restaurants to by a specific cuisine
+    const restList = res.nearby_restaurants.filter((rest) => {
+        return rest.restaurant.cuisines.includes(cuisine);
+    });
+    console.log(restList);
+
+    const delivery = res.nearby_restaurants.filter((del) => {
+        return del.restaurant.has_online_delivery === true
+    });
+    console.log(delivery);
+
+    const finalFoodList = delivery.concat(restList);
+    console.log(finalFoodList);
+
+    let randomResult = finalFoodList[Math.floor(Math.random() * finalFoodList.length)];
+
+    console.log(randomResult.restaurant.name);
+
+
+}); //* END OF AJAX CODE *//
 
 
 //////////////////
