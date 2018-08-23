@@ -1,2 +1,31 @@
 @import 'setup';
+@import 'utils';
+@import 'typography';
+
+
+html {
+  background-color: #fff; 
+}
+
+fieldset {
+  border: none;
+  display: flex;
+  div {
+    padding: 10px;
+    input[type=radio] {
+      display: none;
+      &:checked + label {
+        background-color: $highlight;
+      }
+    }
+    label {
+      padding: 10px;
+      border-radius: 10px;
+      &:hover {
+        background-color: $highlight;
+      }
+      
+    }
+  }
+}
 

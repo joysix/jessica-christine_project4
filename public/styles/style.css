@@ -130,3 +130,37 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
+
+
+html {
+  font-size: 62.5%; }
+
+body {
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1.6rem; }
+
+h1, label {
+  font-family: "Josefin Slab", serif; }
+
+label {
+  font-size: 3rem;
+  text-transform: lowercase; }
+
+html {
+  background-color: #fff; }
+
+fieldset {
+  border: none;
+  display: flex; }
+  fieldset div {
+    padding: 10px; }
+    fieldset div input[type=radio] {
+      display: none; }
+      fieldset div input[type=radio]:checked + label {
+        background-color: #ffbf46; }
+    fieldset div label {
+      padding: 10px;
+      border-radius: 10px; }
+      fieldset div label:hover {
+        background-color: #ffbf46; }
+

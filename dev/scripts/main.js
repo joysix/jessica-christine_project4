@@ -33,13 +33,6 @@ const app = {
 const zmt = app.zmt;
 const mdb = app.mdb;
 
-app.random = (arr) => {
-    const index = arr[Math.floor(Math.random() * arr.length)];
-    return index;
-};
-
-//// do you think it's too much to separate functions by api?
-
 
 /////////////////
 // ZOMATO SHIZ //
