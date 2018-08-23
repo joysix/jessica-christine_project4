@@ -131,7 +131,6 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-
 html {
   font-size: 62.5%; }
 
@@ -163,4 +162,3 @@ fieldset {
       border-radius: 10px; }
       fieldset div label:hover {
         background-color: #ffbf46; }
-

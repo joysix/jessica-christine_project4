@@ -37,7 +37,7 @@ const entertainment = {
     movie: 'movies'
 };
 
-const movieIDs = {
+const movieGenres = {
     action: 28,
     comedy: 35,
     crime: 80,
@@ -46,7 +46,7 @@ const movieIDs = {
     horror: 27,
 };
 
-const tvIDs = {
+const tvGenres = {
     action: 10759,
     animation: 16,
     comedy: 35,
@@ -71,17 +71,27 @@ const cuisines = {
     vegetarian: 308
 };
 
-app.markupBuilder = (obj, options) => {
-    const fieldset = $(`<fieldset>`).addClass(options)
+// parameters: OBJect of options and their ids, CATEGORY THIS IS THE UPDATED MARKUP BUILDER
+app.markupBuilder = (obj, category) => {
+    // create a empty fieldset
+    const fieldset = $(`<fieldset>`).addClass(category)
+    // appends fieldset to the form
     $('form').append(fieldset);
+    // iterates through the object and creates a radio input for each key
     for (let key in obj) {
         const option = `
           <div>
-            <input type="radio" id="${key} ${options}" name="${options}" value="${obj[key]}" checked />
-            <label for="${key} ${options}" id="${key} ${options}">${key}</label>
+            <input type="radio" id="${key}" name="${category}" value="${obj[key]}"/>
+            <label for="${key}">${key}</label>
           </div>`
-        $(`.${options}`).append(option);
+          // appends the option (input+label) to the fieldset
+        $(`.${category}`).append(option);
     }
+};
+
+app.random = (arr) => {
+    const index = arr[Math.floor(Math.random() * arr.length)];
+    return index;
 };
 
 /////////////////
@@ -161,6 +171,7 @@ zmt.searchCall = (cuisine) => $.ajax({
     $('.restResults').append(restaurantRatingMarkup);
 }); //* END OF AJAX CODE/ THEN STATEMENT *//
 
+// app.markupResultBuilder = ();
 
 //////////////////
 // MOVIEDB JUNK //
@@ -279,27 +290,52 @@ mdb.tvDetails = (id) => $.ajax({
         
     }  
 });
+
+app.markupBuilder(entertainment, "entertainment");
+
+app.populateTVGenres = () => {
+    $('form').on('click', '#tv', function () {
+        $('.tvGenres').remove();
+        $('.movieGenres').remove();
+        app.markupBuilder(tvGenres, "tvGenres"); 
+    });
+} 
+
+app.populateMovieGenres = () => {
+    $('form').on('click', '#movie', function () {
+    $('.movieGenres').remove();
+    $('.tvGenres').remove();
+    app.markupBuilder(movieGenres, "movieGenres");
+});
+}
+
+app.markupBuilder(cuisines, "cuisines");
+app.populateCuisineGenres = () => {
+    $('form').on('click', '#cuisine', function () {
+        app.markupBuilder(cuisines, "cuisines");
+    });
+}
+
+app.markupBuilder(costs, "costs");
+app.populateCost = () => {
+    $('form').on('click', '#costs', function (){
+        app.markupBuilder(costs, "costs");
+    });
+}
 //////////////////// DOCUMENT READY ////////////////////
 
 $(function(){
-    // console.log(zmt)
-    zmt.searchCall("55");
-    mdb.tvCall("35, 80");
-    mdb.movieCall("35");
 
 
-    app.markupBuilder(entertainment, "entertainment");
+}); // END OF DOCUMENT READY
 
-    $('form').on('click', '#tv #entertainment', function () {
-        // app.markupBuilder(tvIDs, "tvGenres");
-        console.log('tv');
-    });
+// SUBMIT FORM FUNCTION
+$('form').on('submit', function(event){
+    event.preventDefault();
+    const entertainmentType = $('input[name=entertainment]:checked').val();
+    const tvGenreType = $('input[name=tvGenres]:checked').val();
+    const movieGenreType = $('input[name=movieGenres]:checked').val();
+    const cuisineType = $('input[name=cuisines]:checked').val();
+    const priceType = $('input[name=costs]:checked').val();
 
-    $('form').on('click', '#movie #entertainment', function () {
-        // app.markupBuilder(movieIDs, "movieGenres");
-        console.log('movies');
-    });
-
-    // app.markupBuilder(cuisines, "cuisines");
-    // app.markupBuilder(costs, "costs");
-});
+}); 
