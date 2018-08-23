@@ -30,9 +30,59 @@ const app = {
     mdb: {}    // for MovieDB
 } 
 
-const zmt = app.zmt;
-const mdb = app.mdb;
+const { zmt, mdb } = app;
 
+const entertainment = {
+    tv: 'tv',
+    movie: 'movies'
+};
+
+const movieIDs = {
+    action: 28,
+    comedy: 35,
+    crime: 80,
+    drama: 18,
+    family: 10751,
+    horror: 27,
+};
+
+const tvIDs = {
+    action: 10759,
+    animation: 16,
+    comedy: 35,
+    crime: 80,
+    drama: 18,
+    reality: 10764
+};
+
+const costs = {
+    $: 1,
+    $$: 2,
+    $$$: 3,
+    $$$$: 4
+};
+
+const cuisines = {
+    canadian: 381,
+    italian: 55,
+    japanese: 60,
+    mexican: 73,
+    thai: 95,
+    vegetarian: 308
+};
+
+app.markupBuilder = (obj, options) => {
+    const fieldset = $(`<fieldset>`).addClass(options)
+    $('form').append(fieldset);
+    for (let key in obj) {
+        const option = `
+          <div>
+            <input type="radio" id="${key} ${options}" name="${options}" value="${obj[key]}" checked />
+            <label for="${key} ${options}" id="${key} ${options}">${key}</label>
+          </div>`
+        $(`.${options}`).append(option);
+    }
+};
 
 /////////////////
 // ZOMATO SHIZ //
@@ -236,4 +286,20 @@ $(function(){
     zmt.searchCall("55");
     mdb.tvCall("35, 80");
     mdb.movieCall("35");
+
+
+    app.markupBuilder(entertainment, "entertainment");
+
+    $('form').on('click', '#tv #entertainment', function () {
+        // app.markupBuilder(tvIDs, "tvGenres");
+        console.log('tv');
+    });
+
+    $('form').on('click', '#movie #entertainment', function () {
+        // app.markupBuilder(movieIDs, "movieGenres");
+        console.log('movies');
+    });
+
+    // app.markupBuilder(cuisines, "cuisines");
+    // app.markupBuilder(costs, "costs");
 });
