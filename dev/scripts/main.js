@@ -41,7 +41,9 @@ const mdb = app.mdb;
 // MAP THINGS //
 ////////////////
 
-
+app.randomResult = (arr) => {
+    arr[Math.floor(Math.random() * arr.length)];
+};
 
 
 /////////////////
@@ -150,6 +152,6 @@ mdb.tvDetails = (id) => $.ajax({
 $(function(){
 
     // zmt.geocodeCall(43.6481870, -79.3979690);
-    mdb.tvCall("35, 80");
+    // mdb.tvCall("35, 80");
     // mdb.movieCall();
 });

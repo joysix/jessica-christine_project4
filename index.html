@@ -4,46 +4,91 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:400,400i,600,700|Josefin+Slab:400,400i,600,700" rel="stylesheet">
   <link rel="stylesheet" href="public/styles/style.css">
   <title>Document</title>
 </head>
 <body>
   <h1>hihi</h1>
 
-    <!-- <form action="" class="wrapper">
-          <fieldset class="questions q-One">
-          <p>What type of food are you feeling tonight?</p>
-            <div class="cuisine-choices">
-              <input type="radio" name="cuisine" id="cuisineA" value="cuisineA" point="1">
-              <label for="cuisineA">Thai</label>
-            </div>
-            <div class="cuisine-choices">
-              <input type="radio" name="cuisine" id="cuisineB" value="cuisineB" point="2">
-              <label for="cuisineB">Italian</label>
-            </div>
-            <div class="cuisine-choices">
-              <input type="radio" name="cuisine" id="cuisineC" value="cuisineC" point="3" required>
-              <label for="cuisineC">Asian</label>
-            </div>
-            <div class="cuisine-choices">
-              <input type="radio" name="cuisine" id="cuisineD" value="cuisineD" point="4" required>
-              <label for="cuisineD">Japanese</label>
-            </div>
-            <div class="cuisine-choices">
-              <input type="radio" name="cuisine" id="cuisineE" value="cuisineE" point="5" required>
-              <label for="cuisineE">Mexican</label>
-              <div class="cuisine-choices">
-                <input type="radio" name="cuisine" id="cuisineF" value="cuisineF" point="6" required>
-                <label for="cuisineF">Healthy</label>
-              </div>
-            </div>
-          </fieldset> -->
-    
-    
-    <!-- <input type="submit" value="Can I sit with you?" name="submit" class="to-bottom">
-    <label for="submit"><a href="#final-answer"></a></label> -->
+  <form></form>
 
   <script src='https://code.jquery.com/jquery-3.2.1.min.js' integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4='crossorigin='anonymous'></script>
   <script src="public/scripts/main.js"></script>
+
+  <script>
+    const app = {};
+
+    const entertainment = {
+      tv: 'tv',
+      movie: 'movies'
+    };
+    
+    const movieIDs = {
+      action: 28,
+      comedy: 35,
+      crime: 80,
+      drama: 18,
+      family: 10751,
+      horror: 27,
+    };
+
+    const tvIDs = {
+      action: 10759,
+      animation: 16,
+      comedy: 35,
+      crime: 80,
+      drama: 18,
+      reality: 10764
+    };
+
+    const costs = {
+      $: 1,
+      $$: 2,
+      $$$: 3,
+      $$$$: 4
+    };
+
+    const cuisines = {
+      canadian: 381,
+      italian: 55,
+      japanese: 60,
+      mexican: 73,
+      thai: 95,
+      vegetarian: 308
+    };
+
+    app.markupBuilder = (obj, options) => {
+      const fieldset = $(`<fieldset>`).addClass(options)
+      $('form').append(fieldset);
+      for(let key in obj){
+        const option = `
+          <div>
+            <input type="radio" id="${key} ${options}" name="${options}" value="${obj[key]}" checked />
+            <label for="${key} ${options}" id="${key} ${options}">${key}</label>
+          </div>`
+        $(`.${options}`).append(option);
+      }
+    };
+
+    
+
+    $(function(){
+      app.markupBuilder(entertainment, "entertainment");
+
+      $('form').on('click', '#tv #entertainment', function(){
+        // app.markupBuilder(tvIDs, "tvGenres");
+        console.log('tv');
+      });
+      
+      $('form').on('click', '#movie #entertainment', function(){
+        // app.markupBuilder(movieIDs, "movieGenres");
+        console.log('movies');
+      });
+
+      // app.markupBuilder(cuisines, "cuisines");
+      // app.markupBuilder(costs, "costs");
+    });
+  </script>
 </body>
 </html>
