@@ -38,7 +38,7 @@ fset.entertainment = {
     movie: 'movies'
 };
 
-fset.movieIDs = {
+fset.movieGenres = {
     action: 28,
     comedy: 35,
     crime: 80,
@@ -47,7 +47,7 @@ fset.movieIDs = {
     horror: 27,
 };
 
-fset.tvIDs = {
+fset.tvGenres = {
     action: 10759,
     animation: 16,
     comedy: 35,
@@ -72,7 +72,7 @@ fset.cuisines = {
     vegetarian: 308
 };
 
-const { entertainment, movieIDs, tvIDs, costs, cuisines } = fset
+const { entertainment, movieGenres, tvGenres, costs, cuisines } = fset
 
 
 ////////////////////////
@@ -84,18 +84,74 @@ app.random = (arr) => {
     return index;
 };
 
-//
-app.markupBuilder = (obj, category) => {
-    const fieldset = $(`<fieldset>`).addClass(category)
-    $('form').append(fieldset);
-    for (let key in obj) { 
+// constructs fieldset markup in form
+app.fsetMarkup = (obj, category) => {
+    // creates a empty fieldset
+    const fieldset = $(`<fieldset>`).addClass(category).attr('id', category)
+    // appends fieldset to the form
+    $('form').prepend(fieldset);
+    // iterates through the object and creates a radio input for each key
+    for (let key in obj) {
         const option = `
           <div>
-            <input type="radio" id="${key} ${category}" name="${category}" value="${obj[key]}"/>
-            <label for="${key} ${category}" id="${key} ${category}">${key}</label>
+            <input type="radio" id="${key}" name="${category}" value="${obj[key]}"/>
+            <label for="${key}">${key}</label>
           </div>`
+          // appends the option (input+label) to the fieldset
         $(`.${category}`).append(option);
     }
+    $('.tvGenres').addClass('remove');
+    $('.movieGenres').addClass('remove');
+    $('.costs').addClass('priceRemove');
+};
+
+// constructs rating div markup 
+app.ratingMarkup = (num) => {
+    // rounds rating to nearest 0.5
+    const rating = Math.round(num * 2) / 2;
+
+    // checks if half point exists
+    const half = rating % (Math.floor(rating))
+
+    // declares variable where final markup will be stored
+    let final;
+    
+    //  if result includes half point, add half a star
+    if(half){
+        final = 'star '.repeat(rating) + 'st';
+    }
+    
+    //  if not, use only whole stars
+    else {
+        // final = 'star '.repeat(rating);
+    }
+    
+    console.log(final);
+    // returns final markup
+    return final;
+}
+
+// constructs result div markup
+app.resultMarkup = (obj) => {
+    // creates containing div with background image
+    const resultContainer = $('<div>').addClass(obj.type).css('background-image', `url('${obj.bg}')`);
+// console.log(resultContainer);
+
+    // appends empty result container to body container
+    $('.container').append(resultContainer);
+    
+    // creates rating markup
+    const ratingMarkup = app.ratingMarkup(obj.rating);
+// console.log(ratingMarkup);
+    
+    // creates text with title, detail, rating
+    const result = `<h2>${obj.name}</h2>
+        <p>${obj.detail}</p>
+        <div class="rating ${obj.type}">${ratingMarkup}</div>`;
+// console.log(result);
+    
+    // appends final result markup to result container
+    $(`.${obj.type}`).append(result);
 };
 
 
@@ -106,9 +162,6 @@ app.markupBuilder = (obj, category) => {
 // Zomato API data
 zmt.key = '2c44fd9fe198e5be83cccbdfab8665f5'
 zmt.url = 'https://developers.zomato.com/api/v2.1/'
-zmt.price;
-zmt.cuisine;
-
 
 // ajax request to Zomato search endpoint
 zmt.searchCall = (cuisine) => $.ajax({
@@ -135,41 +188,17 @@ zmt.searchCall = (cuisine) => $.ajax({
     
     // object with: photo url, website address, address, user rating
     const restaurant = {
-        name: restoToPrint.name,
-        address: restoToPrint.location.address,
-        url: restoToPrint.url,
-        photos: restoToPrint.featured_image,
-        rating: restoToPrint.user_rating.aggregate_rating
+        type: 'restaurant',
+        h2: restoToPrint.name,
+        p: restoToPrint.location.address,
+        rating: restoToPrint.user_rating.aggregate_rating,
+        bg: restoToPrint.featured_image,
+        bg2: '',
+        url: restoToPrint.url
     }
 
-    // building HTML markup
-    const restaurantNameMarkup = `<div>
-        <h2>${restaurant.name}</h2>
-        </div>`
+    app.resultMarkup(restaurant);
 
-    const restaurantAddressMarkup = `<div>
-        <h2>${restaurant.address}</h2>
-        </div>`
-
-    const restaurantUrlMarkup = `<div>
-        <h2><a href=${restaurant.url}>Link to their Page</a></h2>
-        </div>`
-
-    const restaurantPhotoMarkup = `<div>
-        <img src=${restaurant.photos}>
-        </div>`
-
-    const restaurantRatingMarkup = `<div>
-        <h2>User Rating: ${restaurant.rating}</h2>
-        </div>`
-
-
-    // appending markup to restoResult div
-    $('.restoResult').append(restaurantAddressMarkup);
-    $('.restoResult').append(restaurantNameMarkup);
-    $('.restoResult').append(restaurantUrlMarkup);
-    // $('.restoResult').append(restaurantPhotoMarkup);
-    $('.restoResult').append(restaurantRatingMarkup);
 }); //* END OF ZOMATO THEN STATEMENT *//
 
 
@@ -203,40 +232,20 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
 .then((res) => { // returns tv series by genre choice
     // narrows down response to results key
     const tvListByGenre = res.results;
+    console.log(res.results)
 
     // randomly selects one show from call
     const showToPrint = app.random(tvListByGenre);
 
     // chooses a random tv show from the genre list
     const tvShow = {
-        name: showToPrint.name,
-        overview: showToPrint.overview,
-        photos: showToPrint.poster_path,
-        rating: showToPrint.vote_average
+        type: 'tvshow',
+        h2: showToPrint.name,
+        p: showToPrint.overview,
+        rating: showToPrint.vote_average,
+        bg: showToPrint.backdrop_path,
+        bg2: showToPrint.poster_path
     };
-
-    // building HTML markup
-    let tvNameMarkup = `<div>
-        <h2>${tvShow.name}</h2>
-        </div>`;
-
-    let tvOverviewMarkup = `<div>
-        <h2>${tvShow.overview}</h2>
-        </div>`;
-
-    let tvPhotosMarkup = `<div>
-        <img src="${mdb.imgBaseUrl}${tvShow.photos}" alt="">
-        </div>`;
-
-    let tvRatingsMarkup = `<div>
-        <h2>${tvShow.rating}</h2>
-        </div>`;
-
-    // appending markup to tvResult div
-    $('.tvResults').append(tvNameMarkup);
-    $('.tvResults').append(tvOverviewMarkup);
-    $('.tvResults').append(tvPhotosMarkup);
-    $('.tvResults').append(tvRatingsMarkup);
 });
 
 //// if user chooses movies ////////////////
@@ -260,34 +269,14 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
     const movieToPrint = app.random(movieListByGenre);
 
     const movie = {
-        name: movieToPrint.title,
-        overview: movieToPrint.overview,
-        photos: movieToPrint.poster_path,
-        rating: movieToPrint.vote_average
+        type: 'movie',
+        h2: movieToPrint.title,
+        p: movieToPrint.overview,
+        rating: movieToPrint.vote_average,
+        bg: movieToPrint.backdrop_path,
+        bg2: movieToPrint.poster_path
     }
 
-    // building HTML markup
-    let movieNameMarkup = `<div>
-        <h2>${movie.name}</h2>
-        </div>`;
-
-    let movieOverviewMarkup = `<div>
-        <h2>${movie.overview}</h2>
-        </div>`;
-        
-    let moviePhotosMarkup = `<div>
-        <img src="${mdb.imgUrl}${movie.photos}" alt="">
-        </div>`;
-
-    let movieRatingsMarkup = `<div>
-        <h2>Rating: ${movie.rating}</h2>
-        </div>`;
-
-    // appending markup to movieResult div
-    $('.movieResult').append(movieNameMarkup);
-    $('.movieResult').append(movieOverviewMarkup);
-    $('.movieResult').append(moviePhotosMarkup);
-    $('.movieResult').append(movieRatingsMarkup);
 });
 
 mdb.trailerCall = (type, id) => $.ajax({
@@ -305,20 +294,48 @@ mdb.trailerCall = (type, id) => $.ajax({
     const trailerList = res.results.filter((trailer) => {
         return trailer.site === "YouTube" && trailer.type === "Trailer";
     });
-
-
 });
 
+app.trailerMarkup = (key) => {
+    const embed =`<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    // $('div').append(embed); // STILL NEED TO TARGET SPECIFIC DIV
+}
 
 //////////////////// DOCUMENT READY ////////////////////
 
+
+app.populateNext = (id, obj, type, remove) => {
+    $('form').on('click', id, function () {
+        $(remove).remove();
+        app.fsetMarkup(obj, type);
+        console.log(id, obj, type, remove);
+    });
+}
+
+
+// SUBMIT FORM FUNCTION
+$('form').on('submit', function(event){
+    event.preventDefault();
+    const entertainmentType = $('input[name=entertainment]:checked').val();
+    const tvGenreType = $('input[name=tvGenres]:checked').val();
+    const movieGenreType = $('input[name=movieGenres]:checked').val();
+    const cuisineType = $('input[name=cuisines]:checked').val();
+    const priceType = $('input[name=costs]:checked').val();
+}); 
+
+app.init = () => {
+    app.fsetMarkup(entertainment, "entertainment");
+    app.fsetMarkup(cuisines, "cuisines");
+    app.populateNext('#tv', tvGenres, "tvGenres", ".remove");
+    app.populateNext('#movie', movieGenres, "movieGenres", ".remove");
+    for(let cuisine in cuisines) {
+        app.populateNext(`#${cuisine}`, costs, "costs", ".priceRemove");
+    }
+
+}
+
 $(function(){
-    // console.log('hi');
-    console.log(app);
-    // zmt.searchCall("55");
-    // mdb.tvCall("35, 80");
-    // mdb.movieCall("35");
 
-    // mdb.trailerCall("tv", 48891);
+app.init();
 
-});
+}); // END OF DOCUMENT READY
