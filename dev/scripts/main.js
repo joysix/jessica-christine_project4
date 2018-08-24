@@ -136,10 +136,10 @@ app.ratingMarkup = (x) => {
 // constructs result div markup
 app.resultMarkup = (obj) => {
     // creates containing div with background image
-    const resultContainer = $('<div>').addClass(obj.type).css('background-image', `url('${obj.bg}')`);
+    const resultContainer = $('<div>').addClass(obj.type).addClass('result').css('background-image', `url('${obj.bg}')`);
 
     // appends empty result container to body container
-    $('.container').append(resultContainer);
+    $('.resultsPage').append(resultContainer);
     
     // creates rating markup
     const ratingMarkup = app.ratingMarkup(obj.rating);
@@ -322,23 +322,25 @@ app.populateNext = (id, obj, type, remove) => {
 // SUBMIT FORM FUNCTION
 app.submit = () => {
     $('form').on('submit', function(event){
-    event.preventDefault();
-    const entertainmentType = $('input[name=entertainment]:checked').val();
-    const tvGenreType = $('input[name=tvGenres]:checked').val();
-    const movieGenreType = $('input[name=movieGenres]:checked').val();
-    const cuisineType = $('input[name=cuisines]:checked').val();
-    const priceType = $('input[name=costs]:checked').val();
-    zmt.restaurantCall(cuisineType, priceType);
-    if(tvGenreType === undefined) {
-        mdb.movieCall(movieGenreType);
-    } else if(movieGenreType === undefined) {
-        mdb.tvCall(tvGenreType);
-    }   
-}); 
+        event.preventDefault();
+        const entertainmentType = $('input[name=entertainment]:checked').val();
+        const tvGenreType = $('input[name=tvGenres]:checked').val();
+        const movieGenreType = $('input[name=movieGenres]:checked').val();
+        const cuisineType = $('input[name=cuisines]:checked').val();
+        const priceType = $('input[name=costs]:checked').val();
+        zmt.restaurantCall(cuisineType, priceType);
+        if(tvGenreType === undefined) {
+            mdb.movieCall(movieGenreType);
+        } else if(movieGenreType === undefined) {
+            mdb.tvCall(tvGenreType);
+        }  
+        $('.formPage').css('display', 'none');
+        $('.resultsPage').css('display', 'grid');
+    }); 
 }
 
 
-app.init = () => {
+app.formInit = () => {
     app.fsetMarkup(entertainment, "entertainment");
     app.fsetMarkup(cuisines, "cuisines");
     app.populateNext('#tv', tvGenres, "tvGenres", ".remove");
@@ -347,6 +349,14 @@ app.init = () => {
         app.populateNext(`#${cuisine}`, costs, "costs", ".priceRemove");
     }
     app.submit();
+}
+
+app.init = () => {
+    // $('button').on('click', function(){
+    //     $('.mainStartPage').css('display', 'none');
+    //     $('form').css('display', 'grid');
+    // });
+    app.formInit();
 }
 
 $(function(){
