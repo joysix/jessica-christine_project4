@@ -131,11 +131,10 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-
 html {
   font-size: 62.5%; }
 
-body {
+body, p {
   font-family: "Josefin Sans", sans-serif;
   font-size: 1.6rem; }
 
@@ -148,6 +147,15 @@ label {
 
 html {
   background-color: #fff; }
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto; }
+  .container * {
+    grid-column: 1 / -1; }
 
 fieldset {
   border: none;
@@ -163,4 +171,3 @@ fieldset {
       border-radius: 10px; }
       fieldset div label:hover {
         background-color: #ffbf46; }
-

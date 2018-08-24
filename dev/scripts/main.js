@@ -26,18 +26,19 @@
 /////////////////////// END OF PSEUDOCODE ///////////////////////
 
 const app = {
-    zmt: {},     // for Zomato
-    mdb: {}    // for MovieDB
+    zmt: {},
+    mdb: {},
+    fset: []
 } 
 
-const { zmt, mdb } = app;
+const { zmt, mdb, fset } = app;
 
-const entertainment = {
+fset.entertainment = {
     tv: 'tv',
     movie: 'movies'
 };
 
-const movieIDs = {
+fset.movieIDs = {
     action: 28,
     comedy: 35,
     crime: 80,
@@ -46,7 +47,7 @@ const movieIDs = {
     horror: 27,
 };
 
-const tvIDs = {
+fset.tvIDs = {
     action: 10759,
     animation: 16,
     comedy: 35,
@@ -55,14 +56,14 @@ const tvIDs = {
     reality: 10764
 };
 
-const costs = {
+fset.costs = {
     $: 1,
     $$: 2,
     $$$: 3,
     $$$$: 4
 };
 
-const cuisines = {
+fset.cuisines = {
     canadian: 381,
     italian: 55,
     japanese: 60,
@@ -71,18 +72,32 @@ const cuisines = {
     vegetarian: 308
 };
 
-app.markupBuilder = (obj, options) => {
-    const fieldset = $(`<fieldset>`).addClass(options)
+const { entertainment, movieIDs, tvIDs, costs, cuisines } = fset
+
+
+////////////////////////
+// REUSABLE FUNCTIONS //
+////////////////////////
+
+app.random = (arr) => {
+    const index = arr[Math.floor(Math.random() * arr.length)];
+    return index;
+};
+
+//
+app.markupBuilder = (obj, category) => {
+    const fieldset = $(`<fieldset>`).addClass(category)
     $('form').append(fieldset);
-    for (let key in obj) {
+    for (let key in obj) { 
         const option = `
           <div>
-            <input type="radio" id="${key} ${options}" name="${options}" value="${obj[key]}" checked />
-            <label for="${key} ${options}" id="${key} ${options}">${key}</label>
+            <input type="radio" id="${key} ${category}" name="${category}" value="${obj[key]}"/>
+            <label for="${key} ${category}" id="${key} ${category}">${key}</label>
           </div>`
-        $(`.${options}`).append(option);
+        $(`.${category}`).append(option);
     }
 };
+
 
 /////////////////
 // ZOMATO SHIZ //
@@ -91,18 +106,11 @@ app.markupBuilder = (obj, options) => {
 // Zomato API data
 zmt.key = '2c44fd9fe198e5be83cccbdfab8665f5'
 zmt.url = 'https://developers.zomato.com/api/v2.1/'
+zmt.price;
+zmt.cuisine;
 
 
-// let cuisine = (function() => {
-//     $('form').on('submit', function (event) {
-//       event.preventDefault();
-//       const cuisine = $('input[name=cuisine]:checked').val();
-//       console.log(cuisine);
-//     });
-// });
-
-    zmt.price = 1
-// ajax request to Zomato geocode endpoint
+// ajax request to Zomato search endpoint
 zmt.searchCall = (cuisine) => $.ajax({
     url: `${zmt.url}search`,
     method: 'GET',
@@ -114,64 +122,70 @@ zmt.searchCall = (cuisine) => $.ajax({
         category: 1,
         cuisines: cuisine,
     }
-}).then((res) => {
-    // returns array of restaurants in toronto by cuisine choice
-    // console.log(res);
-    //filter this array of restaurants to by price choice
-    const restPriceList = res.restaurants.filter((rest) => {
-        return rest.restaurant.price_range === zmt.price;
+})
+.then((res) => {        // returns restaurants in Toronto by cuisine choice
+    // filters response by price choice
+    const restoListbyPrice = res.restaurants.filter((resto) => {
+        return resto.restaurant.price_range === zmt.price;
     });
-    // console.log(restPriceList);
-    
-    // console.log(app.random(restPriceList));
 
-    const userFinalChoice = app.random(restPriceList);
-    console.log(userFinalChoice);
+    // randomly selects one restaurant from call
+    const randomResto = app.random(restoListbyPrice);
+    const restoToPrint = randomResto.restaurant;
     
-    //create object with: photo url, website address, address, user rating
-    const userChoiceInfo = {
-        name: userFinalChoice.restaurant.name,
-        address: userFinalChoice.restaurant.location.address,
-        url: userFinalChoice.restaurant.url,
-        photos: userFinalChoice.restaurant.featured_image,
-        rating: userFinalChoice.restaurant.user_rating.aggregate_rating
+    // object with: photo url, website address, address, user rating
+    const restaurant = {
+        name: restoToPrint.name,
+        address: restoToPrint.location.address,
+        url: restoToPrint.url,
+        photos: restoToPrint.featured_image,
+        rating: restoToPrint.user_rating.aggregate_rating
     }
-    console.log(userChoiceInfo);
 
-    let restaurantNameMarkup = `<div>
-        <h2>${userChoiceInfo.name}</h2>
+    // building HTML markup
+    const restaurantNameMarkup = `<div>
+        <h2>${restaurant.name}</h2>
         </div>`
-    let restaurantAddressMarkup = `<div>
-        <h2>${userChoiceInfo.address}</h2>
+
+    const restaurantAddressMarkup = `<div>
+        <h2>${restaurant.address}</h2>
         </div>`
-    let restaurantUrlMarkup = `<div>
-        <h2><a href=${userChoiceInfo.url}>Link to their Page</a></h2>
+
+    const restaurantUrlMarkup = `<div>
+        <h2><a href=${restaurant.url}>Link to their Page</a></h2>
         </div>`
-    let restaurantPhotoMarkup = `<div>
-        <img src=${userChoiceInfo.photos}>
+
+    const restaurantPhotoMarkup = `<div>
+        <img src=${restaurant.photos}>
         </div>`
-    let restaurantRatingMarkup = `<div>
-        <h2>User Rating: ${userChoiceInfo.rating}</h2>
+
+    const restaurantRatingMarkup = `<div>
+        <h2>User Rating: ${restaurant.rating}</h2>
         </div>`
-    // adding out html markup to
-    $('.restResults').append(restaurantNameMarkup);
-    $('.restResults').append(restaurantAddressMarkup);
-    $('.restResults').append(restaurantUrlMarkup);
-    // $('.restResults').append(restaurantPhotoMarkup);
-    $('.restResults').append(restaurantRatingMarkup);
-}); //* END OF AJAX CODE/ THEN STATEMENT *//
+
+
+    // appending markup to restoResult div
+    $('.restoResult').append(restaurantAddressMarkup);
+    $('.restoResult').append(restaurantNameMarkup);
+    $('.restoResult').append(restaurantUrlMarkup);
+    // $('.restoResult').append(restaurantPhotoMarkup);
+    $('.restoResult').append(restaurantRatingMarkup);
+}); //* END OF ZOMATO THEN STATEMENT *//
 
 
 //////////////////
 // MOVIEDB JUNK //
 //////////////////
 
-mdb.key = '2b03b1ad14b5664a21161db2acde3ab5'
-mdb.url = 'https://api.themoviedb.org/3/'
-mdb.imgUrl = 'https://image.tmdb.org/t/p/original'
+//// if user chooses tv ////////////////
 
-mdb.tvGenre = 35
-// tv IDs: action 10759, comedy 35, animation 16, crime 80, drama 18, reality 10764
+mdb.key = '2b03b1ad14b5664a21161db2acde3ab5';
+mdb.url = 'https://api.themoviedb.org/3/';
+mdb.imgBaseUrl = 'https://image.tmdb.org/t/p/original';
+mdb.trailerBaseUrl = 'https://www.youtube.com/watch?v=';
+mdb.type;
+mdb.tvGenre;
+mdb.movieGenre;
 
 mdb.tvCall = (genre, page = 1) => $.ajax({
     url: `${mdb.url}discover/tv`,
@@ -185,43 +199,47 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
         with_genres: genre,
         genre_ids: genre
     }
-}).then((res) => {
-    console.log(res);
-    const tvGenreList = res.results.map((tvSeries) => {
-        return tvSeries;
-    });
-    // console.log(tvGenreList);
-    const userTvGenreChoice = app.random(tvGenreList);
-    console.log(userTvGenreChoice); // chooses a random tv show from the genre list
+})
+.then((res) => { // returns tv series by genre choice
+    // narrows down response to results key
+    const tvListByGenre = res.results;
 
-    const tvGenreInfo = {
-        name: userTvGenreChoice.name,
-        overview: userTvGenreChoice.overview,
-        photos: userTvGenreChoice.poster_path,
-        rating: userTvGenreChoice.vote_average
-    }
-    console.log(tvGenreInfo);
+    // randomly selects one show from call
+    const showToPrint = app.random(tvListByGenre);
 
+    // chooses a random tv show from the genre list
+    const tvShow = {
+        name: showToPrint.name,
+        overview: showToPrint.overview,
+        photos: showToPrint.poster_path,
+        rating: showToPrint.vote_average
+    };
+
+    // building HTML markup
     let tvNameMarkup = `<div>
-        <h2>${tvGenreInfo.name}</h2>
-        </div>`
+        <h2>${tvShow.name}</h2>
+        </div>`;
+
     let tvOverviewMarkup = `<div>
-        <h2>${tvGenreInfo.overview}</h2>
-        </div>`
+        <h2>${tvShow.overview}</h2>
+        </div>`;
+
     let tvPhotosMarkup = `<div>
-        <img src="${mdb.imgUrl}${tvGenreInfo.photos}" alt="">
-        </div>`
+        <img src="${mdb.imgBaseUrl}${tvShow.photos}" alt="">
+        </div>`;
+
     let tvRatingsMarkup = `<div>
-        <h2>${tvGenreInfo.rating}</h2>
-        </div>`
-    // // adding out html markup to
+        <h2>${tvShow.rating}</h2>
+        </div>`;
+
+    // appending markup to tvResult div
     $('.tvResults').append(tvNameMarkup);
     $('.tvResults').append(tvOverviewMarkup);
     $('.tvResults').append(tvPhotosMarkup);
     $('.tvResults').append(tvRatingsMarkup);
 });
 
-// movie IDs: action 28, comedy 35, crime 80, horror 27, drama 18, family 10751
+//// if user chooses movies ////////////////
 
 mdb.movieCall = (genre, page = 1) => $.ajax({
     url: `${mdb.url}discover/movie`,
@@ -235,71 +253,72 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
         with_genres: genre
     }
 }).then((res) => {
-    console.log(res);
-    const movieGenreList = res.results.map((movieTitle) => {
-        return movieTitle;
-    });
-    // console.log(movieGenreList);
-    const userMovieGenreChoice = app.random(movieGenreList);
-    console.log(userMovieGenreChoice); // chooses a random movie from the genre list
+    // narrows down response to results key
+    const movieListByGenre = res.results;
 
-    const movieGenreInfo = {
-        name: userMovieGenreChoice.title,
-        overview: userMovieGenreChoice.overview,
-        photos: userMovieGenreChoice.poster_path,
-        rating: userMovieGenreChoice.vote_average
+    // randomly selects one movie from call
+    const movieToPrint = app.random(movieListByGenre);
+
+    const movie = {
+        name: movieToPrint.title,
+        overview: movieToPrint.overview,
+        photos: movieToPrint.poster_path,
+        rating: movieToPrint.vote_average
     }
-    console.log(movieGenreInfo);
 
+    // building HTML markup
     let movieNameMarkup = `<div>
-        <h2>${movieGenreInfo.name}</h2>
-        </div>`
+        <h2>${movie.name}</h2>
+        </div>`;
+
     let movieOverviewMarkup = `<div>
-        <h2>${movieGenreInfo.overview}</h2>
-        </div>`
+        <h2>${movie.overview}</h2>
+        </div>`;
+        
     let moviePhotosMarkup = `<div>
-        <img src="${mdb.imgUrl}${movieGenreInfo.photos}" alt="">
-        </div>`
+        <img src="${mdb.imgUrl}${movie.photos}" alt="">
+        </div>`;
+
     let movieRatingsMarkup = `<div>
-        <h2>Rating: ${movieGenreInfo.rating}</h2>
-        </div>`
-    // // adding out html markup to
-    $('.movieResults').append(movieNameMarkup);
-    $('.movieResults').append(movieOverviewMarkup);
-    $('.movieResults').append(moviePhotosMarkup);
-    $('.movieResults').append(movieRatingsMarkup);
+        <h2>Rating: ${movie.rating}</h2>
+        </div>`;
+
+    // appending markup to movieResult div
+    $('.movieResult').append(movieNameMarkup);
+    $('.movieResult').append(movieOverviewMarkup);
+    $('.movieResult').append(moviePhotosMarkup);
+    $('.movieResult').append(movieRatingsMarkup);
 });
 
-mdb.tvDetails = (id) => $.ajax({
-    url: `${mdb.url}/tv/{id}`,
+mdb.trailerCall = (type, id) => $.ajax({
+    url: `${mdb.url}${type}/${id}/videos`,
     method: 'GET',
     dataType: 'json',
     data: {
-        key: mdb.key,
-        
+        api_key: mdb.key
+
     }  
+}).then((res) => {
+    console.log(res.results);
+
+    // filters response by availability on YouTube
+    const trailerList = res.results.filter((trailer) => {
+        return trailer.site === "YouTube" && trailer.type === "Trailer";
+    });
+
+
 });
+
+
 //////////////////// DOCUMENT READY ////////////////////
 
 $(function(){
-    // console.log(zmt)
-    zmt.searchCall("55");
-    mdb.tvCall("35, 80");
-    mdb.movieCall("35");
+    // console.log('hi');
+    console.log(app);
+    // zmt.searchCall("55");
+    // mdb.tvCall("35, 80");
+    // mdb.movieCall("35");
 
+    // mdb.trailerCall("tv", 48891);
 
-    app.markupBuilder(entertainment, "entertainment");
-
-    $('form').on('click', '#tv #entertainment', function () {
-        // app.markupBuilder(tvIDs, "tvGenres");
-        console.log('tv');
-    });
-
-    $('form').on('click', '#movie #entertainment', function () {
-        // app.markupBuilder(movieIDs, "movieGenres");
-        console.log('movies');
-    });
-
-    // app.markupBuilder(cuisines, "cuisines");
-    // app.markupBuilder(costs, "costs");
 });
