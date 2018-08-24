@@ -106,7 +106,9 @@ app.fsetMarkup = (obj, category) => {
 };
 
 // constructs rating div markup 
-app.ratingMarkup = (num) => {
+app.ratingMarkup = (x) => {
+    let num = Number(x);
+
     // rounds rating to nearest 0.5
     const rating = Math.round(num * 2) / 2;
 
@@ -115,18 +117,18 @@ app.ratingMarkup = (num) => {
 
     // declares variable where final markup will be stored
     let final;
-    
+    const star = `<i class="fas fa-star"></i>`;
+    const halfStar = `<i class="fas fa-star-half-alt"></i>`
     //  if result includes half point, add half a star
     if(half){
-        final = 'star '.repeat(rating) + 'st';
+        final = star.repeat(rating) + halfStar;
     }
     
     //  if not, use only whole stars
     else {
-        // final = 'star '.repeat(rating);
+        final = star.repeat(rating);
     }
-    
-    console.log(final);
+        
     // returns final markup
     return final;
 }
@@ -135,24 +137,27 @@ app.ratingMarkup = (num) => {
 app.resultMarkup = (obj) => {
     // creates containing div with background image
     const resultContainer = $('<div>').addClass(obj.type).css('background-image', `url('${obj.bg}')`);
-// console.log(resultContainer);
 
     // appends empty result container to body container
     $('.container').append(resultContainer);
     
     // creates rating markup
     const ratingMarkup = app.ratingMarkup(obj.rating);
-// console.log(ratingMarkup);
     
     // creates text with title, detail, rating
-    const result = `<h2>${obj.name}</h2>
-        <p>${obj.detail}</p>
+    const result = `<h2>${obj.h2}</h2>
+        <p>${obj.p}</p>
         <div class="rating ${obj.type}">${ratingMarkup}</div>`;
-// console.log(result);
     
     // appends final result markup to result container
     $(`.${obj.type}`).append(result);
 };
+
+app.trailerMarkup = (key) => {
+    const embed = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    $('.container').append(embed);  // STILL NEED TO TARGET SPECIFIC DIV
+}
+
 
 
 /////////////////
@@ -164,7 +169,7 @@ zmt.key = '2c44fd9fe198e5be83cccbdfab8665f5'
 zmt.url = 'https://developers.zomato.com/api/v2.1/'
 
 // ajax request to Zomato search endpoint
-zmt.searchCall = (cuisine) => $.ajax({
+zmt.restaurantCall = (cuisine, price) => $.ajax({
     url: `${zmt.url}search`,
     method: 'GET',
     dataType: 'json',
@@ -178,8 +183,9 @@ zmt.searchCall = (cuisine) => $.ajax({
 })
 .then((res) => {        // returns restaurants in Toronto by cuisine choice
     // filters response by price choice
+
     const restoListbyPrice = res.restaurants.filter((resto) => {
-        return resto.restaurant.price_range === zmt.price;
+        return resto.restaurant.price_range === Number(price);
     });
 
     // randomly selects one restaurant from call
@@ -193,10 +199,9 @@ zmt.searchCall = (cuisine) => $.ajax({
         p: restoToPrint.location.address,
         rating: restoToPrint.user_rating.aggregate_rating,
         bg: restoToPrint.featured_image,
-        bg2: '',
+        // bg2: '',
         url: restoToPrint.url
     }
-
     app.resultMarkup(restaurant);
 
 }); //* END OF ZOMATO THEN STATEMENT *//
@@ -210,7 +215,7 @@ zmt.searchCall = (cuisine) => $.ajax({
 
 mdb.key = '2b03b1ad14b5664a21161db2acde3ab5';
 mdb.url = 'https://api.themoviedb.org/3/';
-mdb.imgBaseUrl = 'https://image.tmdb.org/t/p/original';
+mdb.imgBaseUrl = 'https://image.tmdb.org/t/p/original/';
 mdb.trailerBaseUrl = 'https://www.youtube.com/watch?v=';
 mdb.type;
 mdb.tvGenre;
@@ -232,20 +237,21 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
 .then((res) => { // returns tv series by genre choice
     // narrows down response to results key
     const tvListByGenre = res.results;
-    console.log(res.results)
 
     // randomly selects one show from call
     const showToPrint = app.random(tvListByGenre);
-
+    
     // chooses a random tv show from the genre list
     const tvShow = {
         type: 'tvshow',
         h2: showToPrint.name,
         p: showToPrint.overview,
         rating: showToPrint.vote_average,
-        bg: showToPrint.backdrop_path,
-        bg2: showToPrint.poster_path
+        bg: mdb.imgBaseUrl+showToPrint.backdrop_path,
+        bg2: mdb.imgBaseUrl+showToPrint.poster_path
     };
+    app.resultMarkup(tvShow);
+    
 });
 
 //// if user chooses movies ////////////////
@@ -269,14 +275,16 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
     const movieToPrint = app.random(movieListByGenre);
 
     const movie = {
+        id: movieToPrint.id,
         type: 'movie',
         h2: movieToPrint.title,
         p: movieToPrint.overview,
         rating: movieToPrint.vote_average,
-        bg: movieToPrint.backdrop_path,
-        bg2: movieToPrint.poster_path
+        bg: mdb.imgBaseUrl+movieToPrint.backdrop_path,
+        bg2: mdb.imgBaseUrl+movieToPrint.poster_path
     }
-
+    app.resultMarkup(movie);
+    mdb.trailerCall(movie.type, movie.id);
 });
 
 mdb.trailerCall = (type, id) => $.ajax({
@@ -288,18 +296,17 @@ mdb.trailerCall = (type, id) => $.ajax({
 
     }  
 }).then((res) => {
-    console.log(res.results);
 
     // filters response by availability on YouTube
     const trailerList = res.results.filter((trailer) => {
         return trailer.site === "YouTube" && trailer.type === "Trailer";
     });
+
+    const trailerKey = trailerList[0].key
+
+    app.trailerMarkup(trailerKey)
 });
 
-app.trailerMarkup = (key) => {
-    const embed =`<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    // $('div').append(embed); // STILL NEED TO TARGET SPECIFIC DIV
-}
 
 //////////////////// DOCUMENT READY ////////////////////
 
@@ -308,20 +315,28 @@ app.populateNext = (id, obj, type, remove) => {
     $('form').on('click', id, function () {
         $(remove).remove();
         app.fsetMarkup(obj, type);
-        console.log(id, obj, type, remove);
     });
 }
 
 
 // SUBMIT FORM FUNCTION
-$('form').on('submit', function(event){
+app.submit = () => {
+    $('form').on('submit', function(event){
     event.preventDefault();
     const entertainmentType = $('input[name=entertainment]:checked').val();
     const tvGenreType = $('input[name=tvGenres]:checked').val();
     const movieGenreType = $('input[name=movieGenres]:checked').val();
     const cuisineType = $('input[name=cuisines]:checked').val();
     const priceType = $('input[name=costs]:checked').val();
+    zmt.restaurantCall(cuisineType, priceType);
+    if(tvGenreType === undefined) {
+        mdb.movieCall(movieGenreType);
+    } else if(movieGenreType === undefined) {
+        mdb.tvCall(tvGenreType);
+    }   
 }); 
+}
+
 
 app.init = () => {
     app.fsetMarkup(entertainment, "entertainment");
@@ -331,11 +346,11 @@ app.init = () => {
     for(let cuisine in cuisines) {
         app.populateNext(`#${cuisine}`, costs, "costs", ".priceRemove");
     }
-
+    app.submit();
 }
 
 $(function(){
-
-app.init();
+    
+    app.init();
 
 }); // END OF DOCUMENT READY
