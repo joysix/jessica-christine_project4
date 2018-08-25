@@ -4,8 +4,103 @@
 
 
 html {
-  background-color: #fff; 
+  background-color: #fff;
 }
+body {
+  overflow: hidden;
+}
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+}
+
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  & > * {
+    flex-basis: 33%;
+    border: 1px solid grey;
+  }
+  &.costs * {
+    flex-basis: 50%;
+  }
+}
+
+.mainStartPage, .formPage, .resultsPage {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  // background-color: aquamarine;
+}
+
+.formPage {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+h1 {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.resultsPage {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+}
+.result {
+  background-size: cover;
+  background-position: center;
+  background-color: linear-gradient(rgba(255,255,255,0.6),rgba(255,255,255,0.6));
+  &.restaurant {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+  }
+  &.tvshow, &.movie {
+    grid-column: span 1 / -1;
+    grid-row: 2 / span 1;
+  }
+}
+
+
+
+form {
+  grid-column: 1 / -1;
+  grid-row: 2 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  .cuisines {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+  }
+  .entertainment {
+    grid-column: span 1 / -1;
+    grid-row: 1 / span 1;
+  }
+  .costs {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+  }
+  .movieGenres, .tvGenres {
+    grid-column: span 1 / -1;
+    grid-row: 2 / span 1; 
+  }
+}
+
+input[type=submit] {
+  grid-column: 1 / -1;
+  grid-row: span 1 / -1;
+  justify-self: center;
+  align-self: center;
+}
+
 
 fieldset {
   border: none;
