@@ -7,9 +7,9 @@
 html {
   background-color: #fff;
 }
+
 body {
   overflow: hidden;
-  font-size: 62.5%;
 }
 
 .container {
@@ -20,98 +20,63 @@ body {
   grid-template-rows: auto 1fr auto;
 }
 
-fieldset {
-  display: flex;
-  flex-wrap: wrap;
+.mainStartPage, .formPage, .resultsPage, .trailerPage {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  padding: 8%;
+  display: grid;
   justify-content: center;
   align-content: center;
-  text-align: center;
-  & > * {
-    flex-basis: 33%;
-    }
-  &.costs * {
-    flex-basis: 33%;
-  }
+  background-color: $bgcolor;
 }
 
 .mainStartPage {
-  display: grid;
+  grid-template-rows: 1fr auto;
+  i {
+    min-width: 112.5px;
+  }
+} 
+
+header {
+  grid-column: 1 / -1;
+  grid-row: 1 / span 1;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  background-color: #b5b2d4;
-  button {
-    font-size: 3rem;
-    width: 25%;
-    padding: 1%;
-    border-radius: 10px;
-    border: #ede8ed 1px solid;
-    justify-self: center;
-    background-color: #ede8ed;
-    font-family: $sanserif;
+  text-align: center;
+  & > * {
+    margin: 10%;
   }
 }
 
-.mainStartPage, .formPage, .resultsPage {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-  background-color:#b5b2d4;
+button, label, input[type=submit] {
+  justify-self: center;
+  padding: 8px 18px;
+  width: auto;
+  color: $white;
+  background-color: $bgcolor;
+  outline: none;
+  border-radius: 18px;
+  &:hover {
+    background-color: $highlight;
+  }
+}
+button, input[type=submit] {
+  border: $white 2px solid;
 }
 
 .formPage {
   display: none;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 }
 
-.resultsPage {
-  display: none;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr auto;
-}
-.result {
-  margin: 1%;
-  border-radius: 10px;
-  background-size: cover;
-  background-position: center;
-  background-blend-mode: overlay;
-	background-color: hsla(0,0, 0, 0.45);
-  &.restaurant {
-    grid-column: 1 / span 1;
-    grid-row: 2 / span 1;
-  }
-  &.tvshow, &.movie {
-    grid-column: span 1 / -1;
-    grid-row: 2 / span 1;
-  }
-}
-
-input[type=button], input[type=submit] {
-  justify-self: center;
-  align-self: center;
-  font-size: 2rem;
-  width: 300px;
-  padding: 1%;
-  border-radius: 10px;
-  background-color: #ede8ed;
-  font-family: $sanserif;
-  border: #ede8ed 1px solid;
-  margin: 3%;
-}
-
-input[type=button] {
-  grid-column: 1 / -1;
-  grid-row: 3 / -1;
-}
-
-input[type=submit] {
-  grid-column: 1 / -1;
-  grid-row: span 1 / -1;
-}
 
 form {
   grid-column: 1 / -1;
   grid-row: 2 / -1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr auto;
   .cuisines {
     grid-column: 1 / span 1;
     grid-row: 1 / span 1;
@@ -131,25 +96,128 @@ form {
 }
 
 fieldset {
-  border: none;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+  text-align: center;
+  border: none;
+  & > * {
+    flex-basis: 33%;
+    }
   div {
     padding: 10px;
-    input[type=radio] {
-      display: none;
-      &:checked + label {
-        background-color: $highlight;
-      }
+    // border: 1px solid white;
+  }
+}
+
+input[type=radio] {
+  display: none;
+  &:checked + label {
+    background-color: $highlight;
+  }
+}
+label {
+  border: none;
+}
+
+input[type=submit], .newForm {
+  justify-self: center;
+  align-self: center;
+  font-family: $body;
+  grid-column: 1 / -1;
+  grid-row: span 1 / -1;
+}
+
+.resultsPage {
+  padding: 8% 10px;
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-gap: 10px;
+}
+
+.result {
+  padding: 15% 0 5% 0;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  grid-gap: 20px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
+	background-color: hsla(28, 28, 28, 0.9);
+  &.restaurant {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+  }
+  &.tv, &.movie {
+    grid-column: span 1 / -1;
+    grid-row: 2 / span 1;
+  }
+  .rating {
+    min-height: 1.8rem;
+    justify-self: center;
+  }
+  .text {
+    padding: 0 10%;
+    justify-self: center;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    & > p {
+      max-height: auto;
+      justify-self: center;
+      align-content: center;
+      overflow: scroll;
     }
-    label {
-      padding: 10px;
-      border-radius: 10px;
-      &:hover {
-        background-color: $highlight;
+    &.restaurant {
+      text-align: center;
+      p {
+        font-style: italic;
       }
     }
   }
+
+  button {
+    border: none;
+    background: none;
+      &:hover {
+      color: $white;
+      background-color: $highlightopac;
+    }
+  }
+
+  .callAgain {
+    width: 100%;
+    color: $highlight;
+    background-color: $whiteopac;
+    border-radius: 0px;
+      &:hover {
+        color: $white;
+      }
+  }
 }
+
+
+.trailerPage {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: none;
+  justify-content: center;
+  align-content: center;
+  background-color: $bgcolor2;
+  z-index: 99;
+  &.show {
+    display: grid;
+  }
+  .closeTrailer {
+    justify-self: end;
+    color: $black;
+    background: none;
+    border: none;
+  }
+}
+
 
 .animate {
     animation-duration: 0.8s;

@@ -25,13 +25,25 @@
 
 /////////////////////// END OF PSEUDOCODE ///////////////////////
 
-const app = {
-    zmt: {},
-    mdb: {},
-    fset: []
-} 
+const app = {};
 
-const { zmt, mdb, fset } = app;
+app.zmt = {};
+
+app.mdb = {};
+
+app.fset = [];
+
+app.pref = {};
+
+app.res = {};
+
+// app.call = {
+//     resto: 0,
+//     tv: 0,
+//     movie: 0
+// };
+
+const { zmt, mdb, fset, pref, res } = app;
 
 fset.entertainment = {
     tv: 'tv',
@@ -73,8 +85,6 @@ fset.cuisines = {
 
 const { entertainment, movieGenres, tvGenres, costs, cuisines } = fset
 
-app.form = {};
-
 
 ////////////////////////
 // REUSABLE FUNCTIONS //
@@ -108,7 +118,7 @@ app.fsetMarkup = (obj, category) => {
 
 // constructs rating div markup 
 app.ratingMarkup = (rating, type) => {
-    let num = Number(rating);
+    const num = Number(rating); 
 
     // rounds rating to nearest 0.5
     const roundedRating = Math.round(num * 2) / 2;
@@ -117,11 +127,11 @@ app.ratingMarkup = (rating, type) => {
     const half = roundedRating % (Math.floor(roundedRating))
 
     let rest;
+
     if (type === 'restaurant') {
-        rest = 5 - Math.floor(roundedRating);
-    }
-    else {
-        rest = 10 - Math.floor(roundedRating);
+        rest = 5 - Math.ceil(roundedRating);
+    } else {
+        rest = 10 - Math.ceil(roundedRating);
     }
 
     // declares variable where final markup will be stored
@@ -130,13 +140,14 @@ app.ratingMarkup = (rating, type) => {
     const star = `<i class="fas fa-star"></i>`;
     const halfStar = `<i class="fas fa-star-half-alt"></i>`
     const empty = `<i class="far fa-star"></i>`;
-    //  if result includes half point, add half a star
-    if (half) {
-        final = star.repeat(roundedRating) + halfStar + empty.repeat(rest);
-    }
 
-    //  if not, use only whole stars
-    else {
+    // if result includes half point, add half a star
+    // if not, use only whole stars
+    if (num === 0) {
+        final = 'Not yet rated';
+    } else if (half) {
+        final = star.repeat(roundedRating) + halfStar + empty.repeat(rest);
+    } else {
         final = star.repeat(roundedRating) + empty.repeat(rest);
     }
 
@@ -144,46 +155,96 @@ app.ratingMarkup = (rating, type) => {
     return final;
 }
 
-// app.refreshOption = (cuisine, price) => {
-//     $('.differentRestaurant').on('click', function () {
-//         $('.restaurant .result').remove();
-//         zmt.restaurantCall(cuisine, price);
-//     });
-// };
+app.newRestoOption = () => {
+    $('.callAgain.restaurant').off('click');
+    $('.callAgain.restaurant').on('click', () => {
+        $('.result.restaurant').remove();
+        zmt.restaurantCall(pref.cuisine, pref.price);
+    });
+};
+
+app.newTvOption = () => {
+    $('.callAgain.tv').off('click');
+    $('.callAgain.tv').on('click', () => {
+        $('.result.tv').remove();
+        mdb.tvCall(pref.tvGenre);
+    });
+};
+
+app.newMovieOption = () => {
+    $('.callAgain.movie').off('click');
+    $('.callAgain.movie').on('click', () => {
+        $('.result.movie').remove();
+        mdb.movieCall(pref.movieGenre);
+    });
+};
+
+app.watchTrailer = () => {
+    $('.watchTrailer').off('click');
+    $('.watchTrailer').on('click', () => {
+        $('.trailerPage').toggleClass('show');
+    });
+}
+
+app.closeTrailer = () => {
+    $('.closeTrailer').off('click');
+    $('.closeTrailer').on('click', () => {
+        $('.trailerPage').toggleClass('show');
+    });
+}
 
 // constructs result div markup
 app.resultMarkup = (obj) => {
+
+    let bg;
+
+    if (!obj.bg) {
+        bg = obj.bg2;
+    } else {
+        bg = obj.bg
+    }
+
     // creates containing div with background image
-    const resultContainer = $('<div>').addClass(obj.type).addClass('result').css('background-image', `url('${obj.bg}')`);
+    const resultContainer = $('<div>').addClass(`result ${obj.type}`).css('background-image', `url('${bg}')`);
 
     // appends empty result container to body container
     $('.resultsPage').append(resultContainer);
     
     // creates rating markup
-    const ratingMarkup = app.ratingMarkup(obj.rating);
+    const ratingMarkup = app.ratingMarkup(obj.rating, obj.type);
     
     // creates text with title, detail, rating
-    // const refreshOption = `<input type="button" value="Different Restaurant" class="differentRestaurant">`;
-
-    const result = `<h2>${obj.h2}</h2>
-        <p>${obj.p}</p>
-        <div class="rating ${obj.type}">${ratingMarkup}</div>`;
+    
+    const result = `<div class="text ${obj.type}"><h3>${obj.h3}</h3><p>${obj.p}</p></div>
+    <div class="rating ${obj.type}">${ratingMarkup}</div>
+    <button class="callAgain ${obj.type}">Gimme another</button>`;
     
     // appends final result markup to result container
     $(`.${obj.type}`).append(result);
-    // $(`.${obj.type} .result`).append(refreshOption);
 
-    // console.log($(`.${obj.type} .result`));
-    // app.refreshOption(app.form.cuisineType, app.form.priceType);
+    const trailer = mdb.trailerCall(obj.type, obj.id);
+
+    if (trailer) {
+        if (obj.type === "tv" || obj.type === "movie") {
+            const watchTrailer = `<button class="watchTrailer">Trailer</button>`;
+            $(`.text.${obj.type}`).append(watchTrailer);
+        }
+    }
+
+    app.newRestoOption();
+    app.newTvOption();
+    app.newMovieOption();
+    app.watchTrailer();
+    app.closeTrailer();
 };
 
 
 app.trailerMarkup = (key) => {
-    const embed = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    $('.trailer').remove();
+
+    const embed = `<iframe class="trailer" width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     
-    $('.movie .result').on('click', function(){
-        resultsPage.append(embed);  // STILL NEED TO TARGET SPECIFIC DIV
-    });
+    $('.trailerPage').append(embed);
 }
 
 
@@ -197,22 +258,24 @@ zmt.key = '2c44fd9fe198e5be83cccbdfab8665f5'
 zmt.url = 'https://developers.zomato.com/api/v2.1/'
 
 // ajax request to Zomato search endpoint
-zmt.restaurantCall = (cuisine, price) => $.ajax({
+zmt.restaurantCall = (cuisine, price, start = 0) => $.ajax({
     url: `${zmt.url}search`,
     method: 'GET',
     dataType: 'json',
     data: {
         apikey: zmt.key,
         entity_id: 89,
-        entity_type: "city",
-        category: 1,
+        entity_type: 'city',
+        q: 'Toronto',
+        start: start,
         cuisines: cuisine,
-        q: "Toronto",
+        category: 1,
+        sort: 'rating',
+        order: 'desc'
     }
 })
 .then((res) => {        // returns restaurants in Toronto by cuisine choice
     // filters response by price choice
-
     const restoListbyPrice = res.restaurants.filter((resto) => {
         return resto.restaurant.price_range === Number(price);
     });
@@ -221,16 +284,25 @@ zmt.restaurantCall = (cuisine, price) => $.ajax({
     const randomResto = app.random(restoListbyPrice);
     const restoToPrint = randomResto.restaurant;
     
-    // object with: photo url, website address, address, user rating
+    let cuisineKey;
+    
+    for (let key in fset.cuisines) {
+        if (fset.cuisines[key] === Number(cuisine)) {
+            cuisineKey = key;
+        };
+    }
+    
+    // object with address, user rating, photo url, zomato link
     const restaurant = {
         type: 'restaurant',
-        h2: restoToPrint.name,
+        h3: restoToPrint.name,
         p: restoToPrint.location.address,
         rating: restoToPrint.user_rating.aggregate_rating,
         bg: restoToPrint.featured_image,
-        bg2: '../../assets/${fset.cuisines}.jpg',
+        bg2: `../../assets/${cuisineKey}.jpg`,
         url: restoToPrint.url
     }
+    
     app.resultMarkup(restaurant);
 
 }); //* END OF ZOMATO THEN STATEMENT *//
@@ -240,15 +312,34 @@ zmt.restaurantCall = (cuisine, price) => $.ajax({
 // MOVIEDB JUNK //
 //////////////////
 
-//// if user chooses tv ////////////////
-
 mdb.key = '2b03b1ad14b5664a21161db2acde3ab5';
 mdb.url = 'https://api.themoviedb.org/3/';
 mdb.imgBaseUrl = 'https://image.tmdb.org/t/p/original/';
 mdb.trailerBaseUrl = 'https://www.youtube.com/watch?v=';
-mdb.type;
-mdb.tvGenre;
-mdb.movieGenre;
+
+mdb.trailerCall = (type, id) => $.ajax({
+    url: `${mdb.url}${type}/${id}/videos`,
+    method: 'GET',
+    dataType: 'json',
+    data: {
+        api_key: mdb.key
+
+    }
+}).then((res) => {
+
+    // filters response by availability on YouTube
+    const trailerList = res.results.filter((trailer) => {
+        return trailer.site === "YouTube" && trailer.type === "Trailer";
+    });
+
+    const trailerKey = trailerList[0].key
+
+    if (trailerKey) {
+        app.trailerMarkup(trailerKey)
+    } 
+});
+
+//// if user chooses tv ////////////////
 
 mdb.tvCall = (genre, page = 1) => $.ajax({
     url: `${mdb.url}discover/tv`,
@@ -272,15 +363,16 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
     
     // chooses a random tv show from the genre list
     const tvShow = {
-        type: 'tvshow',
-        h2: showToPrint.name,
+        id: showToPrint.id,
+        type: 'tv',
+        h3: showToPrint.name,
         p: showToPrint.overview,
         rating: showToPrint.vote_average,
-        bg: mdb.imgBaseUrl+showToPrint.backdrop_path,
-        bg2: mdb.imgBaseUrl+showToPrint.poster_path
+        bg: mdb.imgBaseUrl + showToPrint.backdrop_path,
+        bg2: mdb.imgBaseUrl + showToPrint.poster_path
     };
+
     app.resultMarkup(tvShow);
-    
 });
 
 //// if user chooses movies ////////////////
@@ -306,36 +398,15 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
     const movie = {
         id: movieToPrint.id,
         type: 'movie',
-        h2: movieToPrint.title,
+        h3: movieToPrint.title,
         p: movieToPrint.overview,
         rating: movieToPrint.vote_average,
         bg: mdb.imgBaseUrl+movieToPrint.backdrop_path,
         bg2: mdb.imgBaseUrl+movieToPrint.poster_path
     }
+
     app.resultMarkup(movie);
-    mdb.trailerCall(movie.type, movie.id);
 });
-
-mdb.trailerCall = (type, id) => $.ajax({
-    url: `${mdb.url}${type}/${id}/videos`,
-    method: 'GET',
-    dataType: 'json',
-    data: {
-        api_key: mdb.key
-
-    }  
-}).then((res) => {
-
-    // filters response by availability on YouTube
-    const trailerList = res.results.filter((trailer) => {
-        return trailer.site === "YouTube" && trailer.type === "Trailer";
-    });
-
-    const trailerKey = trailerList[0].key
-
-    app.trailerMarkup(trailerKey)
-});
-
 
 //////////////////// DOCUMENT READY ////////////////////
 
@@ -352,16 +423,17 @@ app.populateNext = (id, obj, type, remove) => {
 app.submit = () => {
     $('form').on('submit', function(event){
         event.preventDefault();
-        app.form.entertainmentType = $('input[name=entertainment]:checked').val();
-        app.form.tvGenreType = $('input[name=tvGenres]:checked').val();
-        app.form.movieGenreType = $('input[name=movieGenres]:checked').val();
-        app.form.cuisineType = $('input[name=cuisines]:checked').val();
-        app.form.priceType = $('input[name=costs]:checked').val();
-        zmt.restaurantCall(app.form.cuisineType, app.form.priceType);
-        if(app.form.tvGenreType === undefined) {
-            mdb.movieCall(app.form.movieGenreType);
-        } else if(app.form.movieGenreType === undefined) {
-            mdb.tvCall(app.form.tvGenreType);
+        pref.entertainment = $('input[name=entertainment]:checked').val();
+        pref.tvGenre = $('input[name=tvGenres]:checked').val();
+        pref.movieGenre = $('input[name=movieGenres]:checked').val();
+        pref.cuisine = $('input[name=cuisines]:checked').val();
+        pref.price = $('input[name=costs]:checked').val();
+        console.log(pref);
+        zmt.restaurantCall(pref.cuisine, pref.price);
+        if(pref.tvGenre === undefined) {
+            mdb.movieCall(pref.movieGenre);
+        } else if(pref.movieGenre === undefined) {
+            mdb.tvCall(pref.tvGenre);
         }  
         $('.formPage').css('display', 'none');
         $('.resultsPage').css('display', 'grid');
@@ -389,7 +461,5 @@ app.init = () => {
 }
 
 $(function(){
-    
     app.init();
-
 }); // END OF DOCUMENT READY
