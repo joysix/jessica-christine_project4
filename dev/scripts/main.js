@@ -164,9 +164,9 @@ app.newRestoOption = () => {
 };
 
 app.newTvOption = () => {
-    $('.callAgain.tvshow').off('click');
-    $('.callAgain.tvshow').on('click', () => {
-        $('.result.tvshow').remove();
+    $('.callAgain.tv').off('click');
+    $('.callAgain.tv').on('click', () => {
+        $('.result.tv').remove();
         mdb.tvCall(pref.tvGenre);
     });
 };
@@ -214,19 +214,21 @@ app.resultMarkup = (obj) => {
     const ratingMarkup = app.ratingMarkup(obj.rating, obj.type);
     
     // creates text with title, detail, rating
-
     
-    const result = `<h2>${obj.h2}</h2>
-    <p>${obj.p}</p>
+    const result = `<div class="text ${obj.type}"><h3>${obj.h3}</h3><p>${obj.p}</p></div>
     <div class="rating ${obj.type}">${ratingMarkup}</div>
     <button class="callAgain ${obj.type}">Gimme another</button>`;
     
     // appends final result markup to result container
     $(`.${obj.type}`).append(result);
 
-    if (obj.type === "tvshow" || obj.type === "movie") {
-        const trailer = `<button class="watchTrailer">Watch trailer</button>`;
-        $(`.${obj.type}.result`).append(trailer);
+    const trailer = mdb.trailerCall(obj.type, obj.id);
+
+    if (trailer) {
+        if (obj.type === "tv" || obj.type === "movie") {
+            const watchTrailer = `<button class="watchTrailer">Trailer</button>`;
+            $(`.text.${obj.type}`).append(watchTrailer);
+        }
     }
 
     app.newRestoOption();
@@ -238,16 +240,11 @@ app.resultMarkup = (obj) => {
 
 
 app.trailerMarkup = (key) => {
-    
     $('.trailer').remove();
 
-    if (!key) {
-        const sorry = '<p class="trailer">Sorry, no trailer to watch</p>'
-        $('.trailerPage').append(sorry);
-    } else {
-        const embed = `<iframe class="trailer" width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-        $('.trailerPage').append(embed);
-    }
+    const embed = `<iframe class="trailer" width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    
+    $('.trailerPage').append(embed);
 }
 
 
@@ -298,7 +295,7 @@ zmt.restaurantCall = (cuisine, price, start = 0) => $.ajax({
     // object with address, user rating, photo url, zomato link
     const restaurant = {
         type: 'restaurant',
-        h2: restoToPrint.name,
+        h3: restoToPrint.name,
         p: restoToPrint.location.address,
         rating: restoToPrint.user_rating.aggregate_rating,
         bg: restoToPrint.featured_image,
@@ -306,7 +303,6 @@ zmt.restaurantCall = (cuisine, price, start = 0) => $.ajax({
         url: restoToPrint.url
     }
     
-    console.log(restaurant.h2);
     app.resultMarkup(restaurant);
 
 }); //* END OF ZOMATO THEN STATEMENT *//
@@ -320,6 +316,28 @@ mdb.key = '2b03b1ad14b5664a21161db2acde3ab5';
 mdb.url = 'https://api.themoviedb.org/3/';
 mdb.imgBaseUrl = 'https://image.tmdb.org/t/p/original/';
 mdb.trailerBaseUrl = 'https://www.youtube.com/watch?v=';
+
+mdb.trailerCall = (type, id) => $.ajax({
+    url: `${mdb.url}${type}/${id}/videos`,
+    method: 'GET',
+    dataType: 'json',
+    data: {
+        api_key: mdb.key
+
+    }
+}).then((res) => {
+
+    // filters response by availability on YouTube
+    const trailerList = res.results.filter((trailer) => {
+        return trailer.site === "YouTube" && trailer.type === "Trailer";
+    });
+
+    const trailerKey = trailerList[0].key
+
+    if (trailerKey) {
+        app.trailerMarkup(trailerKey)
+    } 
+});
 
 //// if user chooses tv ////////////////
 
@@ -345,17 +363,16 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
     
     // chooses a random tv show from the genre list
     const tvShow = {
-        type: 'tvshow',
-        h2: showToPrint.name,
+        id: showToPrint.id,
+        type: 'tv',
+        h3: showToPrint.name,
         p: showToPrint.overview,
         rating: showToPrint.vote_average,
         bg: mdb.imgBaseUrl + showToPrint.backdrop_path,
         bg2: mdb.imgBaseUrl + showToPrint.poster_path
     };
 
-    console.log(tvShow.h2);
     app.resultMarkup(tvShow);
-    
 });
 
 //// if user chooses movies ////////////////
@@ -381,7 +398,7 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
     const movie = {
         id: movieToPrint.id,
         type: 'movie',
-        h2: movieToPrint.title,
+        h3: movieToPrint.title,
         p: movieToPrint.overview,
         rating: movieToPrint.vote_average,
         bg: mdb.imgBaseUrl+movieToPrint.backdrop_path,
@@ -389,29 +406,7 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
     }
 
     app.resultMarkup(movie);
-    mdb.trailerCall(movie.type, movie.id);
 });
-
-mdb.trailerCall = (type, id) => $.ajax({
-    url: `${mdb.url}${type}/${id}/videos`,
-    method: 'GET',
-    dataType: 'json',
-    data: {
-        api_key: mdb.key
-
-    }  
-}).then((res) => {
-
-    // filters response by availability on YouTube
-    const trailerList = res.results.filter((trailer) => {
-        return trailer.site === "YouTube" && trailer.type === "Trailer";
-    });
-
-    const trailerKey = trailerList[0].key
-
-    app.trailerMarkup(trailerKey)
-});
-
 
 //////////////////// DOCUMENT READY ////////////////////
 
