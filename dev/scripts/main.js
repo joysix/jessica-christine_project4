@@ -59,8 +59,7 @@ fset.tvGenres = {
 fset.costs = {
     $: 1,
     $$: 2,
-    $$$: 3,
-    $$$$: 4
+    $$$: 3
 };
 
 fset.cuisines = {
@@ -73,6 +72,8 @@ fset.cuisines = {
 };
 
 const { entertainment, movieGenres, tvGenres, costs, cuisines } = fset
+
+app.form = {};
 
 
 ////////////////////////
@@ -106,32 +107,49 @@ app.fsetMarkup = (obj, category) => {
 };
 
 // constructs rating div markup 
-app.ratingMarkup = (x) => {
-    let num = Number(x);
+app.ratingMarkup = (rating, type) => {
+    let num = Number(rating);
 
     // rounds rating to nearest 0.5
-    const rating = Math.round(num * 2) / 2;
+    const roundedRating = Math.round(num * 2) / 2;
 
     // checks if half point exists
-    const half = rating % (Math.floor(rating))
+    const half = roundedRating % (Math.floor(roundedRating))
+
+    let rest;
+    if (type === 'restaurant') {
+        rest = 5 - Math.floor(roundedRating);
+    }
+    else {
+        rest = 10 - Math.floor(roundedRating);
+    }
 
     // declares variable where final markup will be stored
     let final;
+
     const star = `<i class="fas fa-star"></i>`;
     const halfStar = `<i class="fas fa-star-half-alt"></i>`
+    const empty = `<i class="far fa-star"></i>`;
     //  if result includes half point, add half a star
-    if(half){
-        final = star.repeat(rating) + halfStar;
+    if (half) {
+        final = star.repeat(roundedRating) + halfStar + empty.repeat(rest);
     }
-    
+
     //  if not, use only whole stars
     else {
-        final = star.repeat(rating);
+        final = star.repeat(roundedRating) + empty.repeat(rest);
     }
-        
+
     // returns final markup
     return final;
 }
+
+// app.refreshOption = (cuisine, price) => {
+//     $('.differentRestaurant').on('click', function () {
+//         $('.restaurant .result').remove();
+//         zmt.restaurantCall(cuisine, price);
+//     });
+// };
 
 // constructs result div markup
 app.resultMarkup = (obj) => {
@@ -145,17 +163,27 @@ app.resultMarkup = (obj) => {
     const ratingMarkup = app.ratingMarkup(obj.rating);
     
     // creates text with title, detail, rating
+    // const refreshOption = `<input type="button" value="Different Restaurant" class="differentRestaurant">`;
+
     const result = `<h2>${obj.h2}</h2>
         <p>${obj.p}</p>
         <div class="rating ${obj.type}">${ratingMarkup}</div>`;
     
     // appends final result markup to result container
     $(`.${obj.type}`).append(result);
+    // $(`.${obj.type} .result`).append(refreshOption);
+
+    // console.log($(`.${obj.type} .result`));
+    // app.refreshOption(app.form.cuisineType, app.form.priceType);
 };
+
 
 app.trailerMarkup = (key) => {
     const embed = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    $('.container').append(embed);  // STILL NEED TO TARGET SPECIFIC DIV
+    
+    $('.movie .result').on('click', function(){
+        resultsPage.append(embed);  // STILL NEED TO TARGET SPECIFIC DIV
+    });
 }
 
 
@@ -179,6 +207,7 @@ zmt.restaurantCall = (cuisine, price) => $.ajax({
         entity_type: "city",
         category: 1,
         cuisines: cuisine,
+        q: "Toronto",
     }
 })
 .then((res) => {        // returns restaurants in Toronto by cuisine choice
@@ -199,7 +228,7 @@ zmt.restaurantCall = (cuisine, price) => $.ajax({
         p: restoToPrint.location.address,
         rating: restoToPrint.user_rating.aggregate_rating,
         bg: restoToPrint.featured_image,
-        // bg2: '',
+        bg2: '../../assets/${fset.cuisines}.jpg',
         url: restoToPrint.url
     }
     app.resultMarkup(restaurant);
@@ -323,16 +352,16 @@ app.populateNext = (id, obj, type, remove) => {
 app.submit = () => {
     $('form').on('submit', function(event){
         event.preventDefault();
-        const entertainmentType = $('input[name=entertainment]:checked').val();
-        const tvGenreType = $('input[name=tvGenres]:checked').val();
-        const movieGenreType = $('input[name=movieGenres]:checked').val();
-        const cuisineType = $('input[name=cuisines]:checked').val();
-        const priceType = $('input[name=costs]:checked').val();
-        zmt.restaurantCall(cuisineType, priceType);
-        if(tvGenreType === undefined) {
-            mdb.movieCall(movieGenreType);
-        } else if(movieGenreType === undefined) {
-            mdb.tvCall(tvGenreType);
+        app.form.entertainmentType = $('input[name=entertainment]:checked').val();
+        app.form.tvGenreType = $('input[name=tvGenres]:checked').val();
+        app.form.movieGenreType = $('input[name=movieGenres]:checked').val();
+        app.form.cuisineType = $('input[name=cuisines]:checked').val();
+        app.form.priceType = $('input[name=costs]:checked').val();
+        zmt.restaurantCall(app.form.cuisineType, app.form.priceType);
+        if(app.form.tvGenreType === undefined) {
+            mdb.movieCall(app.form.movieGenreType);
+        } else if(app.form.movieGenreType === undefined) {
+            mdb.tvCall(app.form.tvGenreType);
         }  
         $('.formPage').css('display', 'none');
         $('.resultsPage').css('display', 'grid');
@@ -352,10 +381,10 @@ app.formInit = () => {
 }
 
 app.init = () => {
-    // $('button').on('click', function(){
-    //     $('.mainStartPage').css('display', 'none');
-    //     $('form').css('display', 'grid');
-    // });
+    $('button').on('click', function(){
+        $('.mainStartPage').css('display', 'none');
+        $('.formPage').css('display', 'grid');
+    });
     app.formInit();
 }
 

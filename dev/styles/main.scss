@@ -1,6 +1,7 @@
 @import 'setup';
 @import 'utils';
 @import 'typography';
+@import 'responsive';
 
 
 html {
@@ -8,6 +9,7 @@ html {
 }
 body {
   overflow: hidden;
+  font-size: 62.5%;
 }
 
 .container {
@@ -26,38 +28,51 @@ fieldset {
   text-align: center;
   & > * {
     flex-basis: 33%;
-    border: 1px solid grey;
-  }
+    }
   &.costs * {
-    flex-basis: 50%;
+    flex-basis: 33%;
+  }
+}
+
+.mainStartPage {
+  display: grid;
+  align-items: center;
+  background-color: #b5b2d4;
+  button {
+    font-size: 3rem;
+    width: 25%;
+    padding: 1%;
+    border-radius: 10px;
+    border: #ede8ed 1px solid;
+    justify-self: center;
+    background-color: #ede8ed;
+    font-family: $sanserif;
   }
 }
 
 .mainStartPage, .formPage, .resultsPage {
   grid-column: 1 / -1;
   grid-row: 1 / -1;
-  // background-color: aquamarine;
+  background-color:#b5b2d4;
 }
 
 .formPage {
-  display: grid;
-  grid-template-rows: auto 1fr;
-}
-
-h1 {
-  grid-column: 1 / -1;
-  text-align: center;
+  display: none;
+  grid-template-rows: auto 1fr auto;
 }
 
 .resultsPage {
   display: none;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto 1fr auto;
 }
 .result {
+  margin: 1%;
+  border-radius: 10px;
   background-size: cover;
   background-position: center;
-  background-color: linear-gradient(rgba(255,255,255,0.6),rgba(255,255,255,0.6));
+  background-blend-mode: overlay;
+	background-color: hsla(0,0, 0, 0.45);
   &.restaurant {
     grid-column: 1 / span 1;
     grid-row: 2 / span 1;
@@ -68,7 +83,28 @@ h1 {
   }
 }
 
+input[type=button], input[type=submit] {
+  justify-self: center;
+  align-self: center;
+  font-size: 2rem;
+  width: 300px;
+  padding: 1%;
+  border-radius: 10px;
+  background-color: #ede8ed;
+  font-family: $sanserif;
+  border: #ede8ed 1px solid;
+  margin: 3%;
+}
 
+input[type=button] {
+  grid-column: 1 / -1;
+  grid-row: 3 / -1;
+}
+
+input[type=submit] {
+  grid-column: 1 / -1;
+  grid-row: span 1 / -1;
+}
 
 form {
   grid-column: 1 / -1;
@@ -94,14 +130,6 @@ form {
   }
 }
 
-input[type=submit] {
-  grid-column: 1 / -1;
-  grid-row: span 1 / -1;
-  justify-self: center;
-  align-self: center;
-}
-
-
 fieldset {
   border: none;
   display: flex;
@@ -119,8 +147,43 @@ fieldset {
       &:hover {
         background-color: $highlight;
       }
-      
     }
   }
 }
 
+.animate {
+    animation-duration: 0.8s;
+    transition-timing-function: ease-in;
+    animation-fill-mode: both;
+}
+.fadeinup {
+    animation-name: fadeInUp;
+}
+
+.fadeinright {
+  animation-name: fadeInRight;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
