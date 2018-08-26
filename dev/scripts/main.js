@@ -106,27 +106,37 @@ app.fsetMarkup = (obj, category) => {
 };
 
 // constructs rating div markup 
-app.ratingMarkup = (x) => {
-    let num = Number(x);
+app.ratingMarkup = (rating, type) => {
+    let num = Number(rating); 
 
     // rounds rating to nearest 0.5
-    const rating = Math.round(num * 2) / 2;
+    const roundedRating = Math.round(num * 2) / 2;
 
     // checks if half point exists
-    const half = rating % (Math.floor(rating))
+    const half = roundedRating % (Math.floor(roundedRating))
+
+    let rest;
+    if(type === 'restaurant'){
+        rest = 5 - Math.floor(roundedRating);
+    }
+    else {
+        rest = 10 - Math.floor(roundedRating);
+    }
 
     // declares variable where final markup will be stored
     let final;
+
     const star = `<i class="fas fa-star"></i>`;
     const halfStar = `<i class="fas fa-star-half-alt"></i>`
+    const empty = `<i class="far fa-star"></i>`;
     //  if result includes half point, add half a star
     if(half){
-        final = star.repeat(rating) + halfStar;
+        final = star.repeat(roundedRating) + halfStar + empty.repeat(rest);
     }
     
     //  if not, use only whole stars
     else {
-        final = star.repeat(rating);
+        final = star.repeat(roundedRating) + empty.repeat(rest);
     }
         
     // returns final markup
@@ -142,7 +152,7 @@ app.resultMarkup = (obj) => {
     $('.resultsPage').append(resultContainer);
     
     // creates rating markup
-    const ratingMarkup = app.ratingMarkup(obj.rating);
+    const ratingMarkup = app.ratingMarkup(obj.rating, obj.type);
     
     // creates text with title, detail, rating
     const result = `<h2>${obj.h2}</h2>

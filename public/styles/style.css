@@ -135,11 +135,17 @@ html {
   font-size: 62.5%; }
 
 body, p {
-  font-family: "Josefin Sans", sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 1.6rem; }
 
-h1, label {
-  font-family: "Josefin Slab", serif; }
+h1 {
+  font-family: "Shrikhand", cursive;
+  font-size: 8rem;
+  text-align: center;
+  display: block;
+  max-width: min-content;
+  justify-self: center;
+  align-self: center; }
 
 label {
   font-size: 3rem;
@@ -180,7 +186,11 @@ fieldset {
 
 h1 {
   grid-column: 1 / -1;
-  text-align: center; }
+  text-align: center;
+  display: block;
+  max-width: min-content;
+  justify-self: center;
+  align-self: center; }
 
 .resultsPage {
   display: none;
