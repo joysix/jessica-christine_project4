@@ -158,29 +158,40 @@ app.ratingMarkup = (rating, type) => {
 app.newRestoOption = () => {
     $('.callAgain.restaurant').off('click');
     $('.callAgain.restaurant').on('click', () => {
-        // $('.result.restaurant').remove();
-        // zmt.restaurantCall(pref.cuisine, pref.price);
-        console.log('restaurantCall');
+        $('.result.restaurant').remove();
+        zmt.restaurantCall(pref.cuisine, pref.price);
     });
 };
 
 app.newTvOption = () => {
     $('.callAgain.tvshow').off('click');
     $('.callAgain.tvshow').on('click', () => {
-        // $('.result.tvshow').remove();
-        // mdb.tvCall(pref.tvGenre);
-        console.log('tvCall');
+        $('.result.tvshow').remove();
+        mdb.tvCall(pref.tvGenre);
     });
 };
 
 app.newMovieOption = () => {
     $('.callAgain.movie').off('click');
     $('.callAgain.movie').on('click', () => {
-        // $('.result.movie').remove();
-        // mdb.movieCall(pref.movieGenre);
-        console.log('movieCall');
+        $('.result.movie').remove();
+        mdb.movieCall(pref.movieGenre);
     });
 };
+
+app.watchTrailer = () => {
+    $('.watchTrailer').off('click');
+    $('.watchTrailer').on('click', () => {
+        $('.trailerPage').toggleClass('show');
+    });
+}
+
+app.closeTrailer = () => {
+    $('.closeTrailer').off('click');
+    $('.closeTrailer').on('click', () => {
+        $('.trailerPage').toggleClass('show');
+    });
+}
 
 // constructs result div markup
 app.resultMarkup = (obj) => {
@@ -203,28 +214,40 @@ app.resultMarkup = (obj) => {
     const ratingMarkup = app.ratingMarkup(obj.rating, obj.type);
     
     // creates text with title, detail, rating
-    // const callAgain = `<button class="callAgain">Gimme another</button>`;
 
+    
     const result = `<h2>${obj.h2}</h2>
-        <p>${obj.p}</p>
-        <div class="rating ${obj.type}">${ratingMarkup}</div>
-        <button class="callAgain ${obj.type}">Gimme another</button>`;
+    <p>${obj.p}</p>
+    <div class="rating ${obj.type}">${ratingMarkup}</div>
+    <button class="callAgain ${obj.type}">Gimme another</button>`;
     
     // appends final result markup to result container
     $(`.${obj.type}`).append(result);
-    
+
+    if (obj.type === "tvshow" || obj.type === "movie") {
+        const trailer = `<button class="watchTrailer">Watch trailer</button>`;
+        $(`.${obj.type}.result`).append(trailer);
+    }
+
     app.newRestoOption();
     app.newTvOption();
     app.newMovieOption();
+    app.watchTrailer();
+    app.closeTrailer();
 };
 
 
 app.trailerMarkup = (key) => {
-    const embed = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     
-    $('.movie .result').on('click', function(){
-        resultsPage.append(embed);  // STILL NEED TO TARGET SPECIFIC DIV
-    });
+    $('.trailer').remove();
+
+    if (!key) {
+        const sorry = '<p class="trailer">Sorry, no trailer to watch</p>'
+        $('.trailerPage').append(sorry);
+    } else {
+        const embed = `<iframe class="trailer" width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        $('.trailerPage').append(embed);
+    }
 }
 
 

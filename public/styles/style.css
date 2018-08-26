@@ -318,3 +318,13 @@ fieldset {
   100% {
     opacity: 1;
     transform: none; } }
+
+.trailerPage {
+  display: none;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  justify-content: center;
+  align-content: center;
+  z-index: 99; }
+  .trailerPage.show {
+    display: grid; }
