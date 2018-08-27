@@ -172,6 +172,13 @@ h4 {
 p {
   line-height: 2.4rem; }
 
+a {
+  text-align: center; }
+
+a:hover {
+  position: relative;
+  bottom: 2px; }
+
 .mainStartPage i {
   font-size: 10rem;
   -webkit-filter: drop-shadow(3px 3px 0 #1c1c1ccc);
@@ -200,6 +207,12 @@ button, label, input[type=submit] {
 button, input[type=submit] {
   font-weight: 600; }
 
+p.trailer {
+  font-size: 3rem;
+  font-style: italic;
+  font-weight: 800;
+  text-align: center; }
+
 @media (max-width: 830px) {
   label {
     font-size: 2.2rem; }
@@ -220,11 +233,6 @@ button, input[type=submit] {
     font-size: 2rem; }
   .mainStartPage i {
     font-size: 6rem; }
-  .resultsPage .result .text.restaurant p {
-    height: auto; }
-  .resultsPage .result .text.tv p, .resultsPage .result .text.movie p {
-    height: auto;
-    max-height: 75px; }
   .resultsPage .result .text .watchTrailer {
     font-size: 1.6rem; }
   .resultsPage .result .text .callAgain {
@@ -287,8 +295,10 @@ button, label, input[type=submit] {
   button:hover, label:hover, input[type=submit]:hover {
     background-color: #4a2545; }
 
-button, input[type=submit] {
+button.start, button.newForm, input[type=submit] {
   border: #ecebe4 2px solid; }
+  button.start:hover, button.newForm:hover, input[type=submit]:hover {
+    background-color: #4a2545; }
 
 .formPage {
   display: none;
@@ -409,6 +419,11 @@ input[type=submit], .newForm {
       overflow: scroll; }
     .result .text.restaurant {
       text-align: center; }
+      .result .text.restaurant p {
+        height: auto; }
+    .result .text.tv p, .result .text.movie p {
+      height: auto;
+      max-height: 75px; }
     .result .text .newForm {
       grid-column: 1 / -1;
       grid-row: span 1 / -1; }
@@ -438,6 +453,15 @@ button {
   z-index: 99; }
   .trailerPage.show {
     display: grid; }
+  .trailerPage p.trailer {
+    margin: 0;
+    width: 560px;
+    height: 315px;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    color: #1c1c1c;
+    border: 1px solid #1c1c1c; }
   .trailerPage .closeTrailer {
     justify-self: end;
     color: #1c1c1c;

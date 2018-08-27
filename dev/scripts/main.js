@@ -215,7 +215,10 @@ app.resultMarkup = (obj) => {
     
     // creates text with title, detail, rating
     
-    const result = `<div class="text ${obj.type}"><h3>${obj.h3}</h3><p>${obj.p}</p></div>
+const result = `<div class="text ${obj.type}">
+        <a href="${obj.url}"><h3>${obj.h3}</h3></a>
+        <p>${obj.p}</p>
+    </div>
     <div class="rating ${obj.type}">${ratingMarkup}</div>
     <button class="callAgain ${obj.type}">Gimme another</button>`;
     
@@ -241,10 +244,13 @@ app.resultMarkup = (obj) => {
 
 app.trailerMarkup = (key) => {
     $('.trailer').remove();
-
-    const embed = `<iframe class="trailer" width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    
-    $('.trailerPage').append(embed);
+    if(key === 0) {
+        const sorry = `<p class="trailer">Sorry, no trailer available!</p>`
+        $('.trailerPage').append(sorry);
+    } else {
+        const embed = `<iframe class="trailer" width="560" height="315" src="https://www.youtube.com/embed/${key}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        $('.trailerPage').append(embed);
+    }
 }
 
 
@@ -332,11 +338,12 @@ mdb.trailerCall = (type, id) => $.ajax({
         return trailer.site === "YouTube" && trailer.type === "Trailer";
     });
 
-    const trailerKey = trailerList[0].key
-
-    if (trailerKey) {
-        app.trailerMarkup(trailerKey)
-    } 
+    if (!trailerList[0]) {
+        app.trailerMarkup(0)
+    } else {
+        const trailerKey = trailerList[0].key
+        app.trailerMarkup(trailerKey);
+    }
 });
 
 //// if user chooses tv ////////////////
@@ -357,7 +364,7 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
 .then((res) => { // returns tv series by genre choice
     // narrows down response to results key
     const tvListByGenre = res.results;
-
+    console.log(tvListByGenre);
     // randomly selects one show from call
     const showToPrint = app.random(tvListByGenre);
     
@@ -369,7 +376,8 @@ mdb.tvCall = (genre, page = 1) => $.ajax({
         p: showToPrint.overview,
         rating: showToPrint.vote_average,
         bg: mdb.imgBaseUrl + showToPrint.backdrop_path,
-        bg2: mdb.imgBaseUrl + showToPrint.poster_path
+        bg2: mdb.imgBaseUrl + showToPrint.poster_path,
+        url: `https://www.themoviedb.org/tv/${showToPrint.id}`
     };
 
     app.resultMarkup(tvShow);
@@ -402,7 +410,8 @@ mdb.movieCall = (genre, page = 1) => $.ajax({
         p: movieToPrint.overview,
         rating: movieToPrint.vote_average,
         bg: mdb.imgBaseUrl+movieToPrint.backdrop_path,
-        bg2: mdb.imgBaseUrl+movieToPrint.poster_path
+        bg2: mdb.imgBaseUrl+movieToPrint.poster_path,
+        url: `https://www.themoviedb.org/movie/${movieToPrint.id}`
     }
 
     app.resultMarkup(movie);

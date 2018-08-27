@@ -44,6 +44,13 @@ h4 {
 p {
   line-height: 2.4rem;
 }
+a {
+  text-align: center;
+}
+a:hover {
+  position: relative;
+  bottom: 2px;
+}
 
 .mainStartPage {
   i {
@@ -81,6 +88,13 @@ button, input[type=submit] {
   font-weight: 600;
 }
 
+p.trailer {
+  font-size: 3rem;
+  font-style: italic;
+  font-weight: 800;
+  text-align: center;
+}
+
 // ======== RESPONSIVE ===========
 
 
@@ -115,13 +129,6 @@ button, input[type=submit] {
   }
   .resultsPage {
     .result .text {
-      &.restaurant p {
-        height: auto;
-      }
-      &.tv p, &.movie p {
-        height: auto;
-        max-height: 75px;
-      }
       .watchTrailer {
         font-size: 1.6rem;
       }

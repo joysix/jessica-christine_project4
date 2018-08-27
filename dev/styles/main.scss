@@ -55,8 +55,12 @@ button, label, input[type=submit] {
     background-color: $highlight;
   }
 }
-button, input[type=submit] {
+
+button.start, button.newForm, input[type=submit] {
   border: $white 2px solid;
+    &:hover {
+    background-color: $highlight;
+  }
 }
 
 .formPage {
@@ -175,7 +179,7 @@ input[type=submit], .newForm {
   background-size: cover;
   background-position: center;
   background-blend-mode: overlay;
-	background-color: hsla(28, 28, 28, 0.9);
+  background-color: hsla(28, 28, 28, 0.9);    
   &.restaurant {
     grid-column: 1 / span 1;
     grid-row: 2 / span 1;
@@ -201,6 +205,13 @@ input[type=submit], .newForm {
     }
     &.restaurant {
       text-align: center;
+      & p {
+        height: auto;
+      }
+    }
+    &.tv p, &.movie p {
+      height: auto;
+      max-height: 75px;
     }
     .newForm {
       grid-column: 1 / -1;
@@ -238,6 +249,16 @@ button {
   z-index: 99;
   &.show {
     display: grid;
+  }
+  p.trailer {
+    margin: 0;
+    width: 560px;
+    height: 315px;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    color: $black;
+    border: 1px solid $black;
   }
   .closeTrailer {
     justify-self: end;
