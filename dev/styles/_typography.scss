@@ -41,6 +41,9 @@ h4 {
   font-family: $body;
   grid-row: 1 / span 1;
 }
+p {
+  line-height: 2.4rem;
+}
 
 .mainStartPage {
   i {
@@ -52,6 +55,10 @@ h4 {
 }
 
 .resultsPage {
+  .restaurant p {
+    font-style: italic;
+    font-size: 2rem;
+  }
   i, .watchTrailer {
     font-size: 2rem;
     text-transform: uppercase;
@@ -76,9 +83,11 @@ button, input[type=submit] {
 
 // ======== RESPONSIVE ===========
 
+
+
 @media (max-width: 830px) {
   label {
-    font-size: 2.3rem;
+    font-size: 2.2rem;
   }
   .formPage {
     grid-template-rows: auto 1fr auto;
@@ -88,18 +97,38 @@ button, input[type=submit] {
 @media (max-width: 670px) {
   h1 {
     font-size: 5rem;
-  }
-  label {
-    font-size: 2rem;
+    line-height: 4.8rem;
   }
   h3 {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
+    text-shadow: 2px 2px $blackopac;
   }
   p {
     font-size: 1.3rem;
+    line-height: 1.8rem;
+  }
+  button, label {
+    font-size: 2rem;
   }
   .mainStartPage i {
     font-size: 6rem;
+  }
+  .resultsPage {
+    .result .text {
+      &.restaurant p {
+        height: auto;
+      }
+      &.tv p, &.movie p {
+        height: auto;
+        max-height: 75px;
+      }
+      .watchTrailer {
+        font-size: 1.6rem;
+      }
+      .callAgain {
+        font-size: 1.6rem;
+      }
+    }
   }
 }
 
@@ -120,4 +149,3 @@ button, input[type=submit] {
     min-width: 80px;
   }
 }
-

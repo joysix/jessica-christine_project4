@@ -2,12 +2,8 @@
 @import 'utils';
 @import 'typography';
 
-html {
-  background-color: #fff;
-}
-
-body {
-  overflow: hidden;
+html, body {
+  background-color: $bgcolor;
 }
 
 .container {
@@ -198,40 +194,37 @@ input[type=submit], .newForm {
     display: grid;
     grid-template-rows: auto 1fr auto;
     & > p {
-      max-height: auto;
+      height: 100px;
       justify-self: center;
       align-content: center;
       overflow: scroll;
     }
     &.restaurant {
       text-align: center;
-      p {
-        font-style: italic;
-      }
     }
     .newForm {
       grid-column: 1 / -1;
       grid-row: span 1 / -1;
     }
   }
+}
 
-  button {
-    border: none;
-    background: none;
-      &:hover {
-      color: $white;
-      background-color: $highlightopac;
-    }
+button {
+  border: none;
+  background: none;
+    &:hover {
+    color: $white;
+    background-color: $highlightopac;
   }
+}
 
-  .callAgain {
-    width: 100%;
-    color: $highlight;
-    background-color: $whiteopac;
-    border-radius: 0px;
-      &:hover {
-        color: $white;
-      }
+.callAgain {
+  width: 100%;
+  color: $highlight;
+  background-color: $whiteopac;
+  border-radius: 0px;
+  &:hover {
+    color: $white;
   }
 }
 
@@ -292,30 +285,66 @@ input[type=submit], .newForm {
 }
 
 // ============ RESPONSIVE ===========
-
+@media (max-width: 1350px) {
+  fieldset div {
+    padding: 6px;
+    flex: 0 1 50%;
+    label {
+      padding: 3px 8px 5px 8px;
+    }
+  }
+}
 @media (max-width: 720px) {
   .result .text {
     padding: 0 5%;
   }
+  fieldset div {
+    padding: 4px;
+    label {
+      padding: 1px 2px;
+      border-radius: 0;
+    }
+  }
 }
 @media (max-width: 625px) {
   .formPage {
-    grid-row-end: 1;
-    padding: 0;
+    padding: 5% 2%;
   }
   form {
-    grid-template-rows: 1fr auto 1fr;
-    height: 100vh;
+    grid-template-rows: 1fr 1fr auto;
   }
   .result .text {
     padding: 0 5%;
   }
   .resultsPage {
-    grid-template-rows: 1fr auto 1fr;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr 1fr auto;
   }
   input[type=submit] {
-    grid-row: 2 / -1;
+    grid-row: span 1 / -1;
     font-size: 2.4rem;
+  }
+  .resultsPage {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr 1fr auto;
+    grid-gap: 10px;
+    .result {
+      padding: 8px 0;
+      & > .text {
+        padding: 25px;
+        & > p {
+          max-height: 80px;
+        }
+      }
+      &.restaurant {
+        grid-column: 1 / -1;
+        grid-row: 2 / span 1;
+      }
+      &.tv, &.movie {
+        grid-column: 1 / -1;
+        grid-row: span 1 / -2;
+      }
+    }
   }
 }
 
@@ -333,4 +362,3 @@ input[type=submit], .newForm {
     justify-self: start;
   }
 }
-
