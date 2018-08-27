@@ -8,7 +8,7 @@ body {
   font-size: 1.6rem;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
   grid-column: 1 / -1;
   justify-self: center;
   align-self: center;
@@ -30,10 +30,16 @@ h1 {
 
 h2 {
   font-size: 6rem;
+  grid-row: 1 / span 1;
 }
 
 h3 {
   font-size: 4rem;
+}
+
+h4 {
+  font-family: $body;
+  grid-row: 1 / span 1;
 }
 
 .mainStartPage {
@@ -68,5 +74,50 @@ button, input[type=submit] {
   font-weight: 600;
 }
 
+// ======== RESPONSIVE ===========
 
+@media (max-width: 830px) {
+  label {
+    font-size: 2.3rem;
+  }
+  .formPage {
+    grid-template-rows: auto 1fr auto;
+  }
+}
+
+@media (max-width: 670px) {
+  h1 {
+    font-size: 5rem;
+  }
+  label {
+    font-size: 2rem;
+  }
+  h3 {
+    font-size: 2.4rem;
+  }
+  p {
+    font-size: 1.3rem;
+  }
+  .mainStartPage i {
+    font-size: 6rem;
+  }
+}
+
+@media (max-width: 475px) {
+  h2 {
+    font-size: 4.8rem;
+  }
+  label, button {
+    font-size: 1.8rem;
+  }
+  .resultsPage i, .resultsPage .watchTrailer {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .mainStartPage .fas {
+    min-width: 80px;
+  }
+}
 
