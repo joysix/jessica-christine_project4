@@ -17,6 +17,7 @@ h1, h2, h3 {
   color: $white;
   font-family: $title;
   text-align: center;
+  text-shadow: 3px 3px $blackopac;
 }
 
 h1 {
@@ -38,6 +39,9 @@ h3 {
 .mainStartPage {
   i {
     font-size: 10rem;
+    -webkit-filter: drop-shadow(3px 3px 0 $blackopac); 
+    -moz-filter: drop-shadow(3px 3px 0 $blackopac); 
+    filter: drop-shadow(3px 3px 0 $blackopac);
   }
 }
 
@@ -46,7 +50,6 @@ h3 {
     font-size: 2rem;
     text-transform: uppercase;
   }
-
   .watchTrailer:before, .watchTrailer:after {
     content: " — ";
   }
@@ -58,7 +61,7 @@ h3 {
 button, label, input[type=submit] {
   text-align: center;
   text-transform: lowercase;
-  font-size: 2.8rem;
+  font-size: 2.4rem;
 }
 
 button, input[type=submit] {

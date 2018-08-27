@@ -148,7 +148,8 @@ h1, h2, h3 {
   display: inline-block;
   color: #ecebe4;
   font-family: "Fugaz One", cursive;
-  text-align: center; }
+  text-align: center;
+  text-shadow: 3px 3px #1c1c1ccc; }
 
 h1 {
   max-width: -webkit-min-content;
@@ -164,7 +165,10 @@ h3 {
   font-size: 4rem; }
 
 .mainStartPage i {
-  font-size: 10rem; }
+  font-size: 10rem;
+  -webkit-filter: drop-shadow(3px 3px 0 #1c1c1ccc);
+  -moz-filter: drop-shadow(3px 3px 0 #1c1c1ccc);
+  filter: drop-shadow(3px 3px 0 #1c1c1ccc); }
 
 .resultsPage i, .resultsPage .watchTrailer {
   font-size: 2rem;
@@ -179,7 +183,7 @@ h3 {
 button, label, input[type=submit] {
   text-align: center;
   text-transform: lowercase;
-  font-size: 2.8rem; }
+  font-size: 2.4rem; }
 
 button, input[type=submit] {
   font-weight: 600; }
@@ -248,21 +252,49 @@ form {
   form .cuisines {
     grid-column: 1 / span 1;
     grid-row: 1 / span 1; }
+    form .cuisines:before {
+      content: "Choose a cuisine";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid #1c1c1ccc; }
   form .entertainment {
     grid-column: span 1 / -1;
     grid-row: 1 / span 1; }
+    form .entertainment:before {
+      content: "Choose your entertainment";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid #1c1c1ccc; }
   form .costs {
     grid-column: 1 / span 1;
     grid-row: 2 / span 1; }
+    form .costs:before {
+      content: "Choose your budget";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid #1c1c1ccc; }
   form .movieGenres, form .tvGenres {
     grid-column: span 1 / -1;
     grid-row: 2 / span 1; }
+    form .movieGenres:before, form .tvGenres:before {
+      content: "Choose a genre";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid #1c1c1ccc; }
 
 fieldset {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-content: center;
+  align-content: start;
   text-align: center;
   border: none; }
   fieldset > * {
@@ -325,6 +357,9 @@ input[type=submit], .newForm {
       text-align: center; }
       .result .text.restaurant p {
         font-style: italic; }
+    .result .text .newForm {
+      grid-column: 1 / -1;
+      grid-row: span 1 / -1; }
   .result button {
     border: none;
     background: none; }

@@ -80,18 +80,50 @@ form {
   .cuisines {
     grid-column: 1 / span 1;
     grid-row: 1 / span 1;
+    &:before {
+      content: "Choose a cuisine";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid $blackopac;
+    }
   }
   .entertainment {
     grid-column: span 1 / -1;
     grid-row: 1 / span 1;
+    &:before {
+      content: "Choose your entertainment";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid $blackopac;
+    }
   }
   .costs {
     grid-column: 1 / span 1;
     grid-row: 2 / span 1;
+    &:before {
+      content: "Choose your budget";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid $blackopac;
+    }
   }
   .movieGenres, .tvGenres {
     grid-column: span 1 / -1;
     grid-row: 2 / span 1; 
+    &:before {
+      content: "Choose a genre";
+      margin: 10px;
+      padding: 10px;
+      width: 100%;
+      text-transform: uppercase;
+      border-bottom: 1px solid $blackopac;
+    }
   }
 }
 
@@ -99,7 +131,7 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-content: center;
+  align-content: start;
   text-align: center;
   border: none;
   & > * {
@@ -175,6 +207,10 @@ input[type=submit], .newForm {
       p {
         font-style: italic;
       }
+    }
+    .newForm {
+      grid-column: 1 / -1;
+      grid-row: span 1 / -1;
     }
   }
 
